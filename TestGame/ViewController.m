@@ -16,6 +16,7 @@ enum
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
     UNIFORM_NORMAL_MATRIX,
     UNIFORM_TEXTURE_MATRIX,
+    UNIFORM_CAMERA_MATRIX,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -82,6 +83,7 @@ GLfloat gCubeVertexData[324] =
   
   GLKMatrix4 _textureMatrix;
     GLKMatrix4 _modelViewProjectionMatrix;
+  GLKMatrix4 _cameraProjectionMatrix;
     GLKMatrix3 _normalMatrix;
     float _rotation;
   float _textTrans;
@@ -115,6 +117,7 @@ GLfloat gCubeVertexData[324] =
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+  
     
     [self setupGL];
 }
@@ -226,11 +229,8 @@ GLfloat gCubeVertexData[324] =
 - (void)update
 {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-  
-   // self.effect.transform.projectionMatrix = projectionMatrix;
-
-    
+    _cameraProjectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(60.0f), aspect, 0.1f, 100.0f);
+   
   //Parent Matrix
     GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
@@ -245,7 +245,7 @@ GLfloat gCubeVertexData[324] =
   _textureMatrix = GLKMatrix4MakeTranslation(0.5f, 0.5f, 0.0f);
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
-    _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+    _modelViewProjectionMatrix = modelViewMatrix;
   _textTrans += self.timeSinceLastUpdate *0.2f;
     _rotation += self.timeSinceLastUpdate * 0.05f;
 }
@@ -255,18 +255,38 @@ GLfloat gCubeVertexData[324] =
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    glColorMask(true, false, false, false);
     
-    
-  
-  glBindVertexArrayOES(_vertexArray);
+  GLKMatrix4 leftEye = GLKMatrix4Rotate(GLKMatrix4Translate(_cameraProjectionMatrix, 0.2, 0.f, 0.f), GLKMathDegreesToRadians(-0.1f), 0.f, 1.f, 0.f);
+  GLKMatrix4 rightEye = GLKMatrix4Rotate(GLKMatrix4Translate(_cameraProjectionMatrix, 0.2, 0.f, 0.f), GLKMathDegreesToRadians(0.1f), 0.f, 1.f, 0.f);
+    glBindVertexArrayOES(_vertexArray);
     // Render the object again with ES2
     glUseProgram(_program);
     glBindTexture(GL_TEXTURE_2D, _texture);
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
+  glUniformMatrix4fv(uniforms[UNIFORM_CAMERA_MATRIX], 1, 0, leftEye.m);
+  
   glUniform2f(uniforms[UNIFORM_TEXTURE_MATRIX], 0.f, _textTrans);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
+  
+  
     glBindTexture(GL_TEXTURE_2D, 0);
+
+  glClear(GL_DEPTH_BUFFER_BIT) ;
+  glColorMask(false, true, true, false);
+  glUseProgram(_program);
+  glBindTexture(GL_TEXTURE_2D, _texture);
+  glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
+  glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
+  glUniformMatrix4fv(uniforms[UNIFORM_CAMERA_MATRIX], 1, 0, rightEye.m);
+  
+  glUniform2f(uniforms[UNIFORM_TEXTURE_MATRIX], 0.f, _textTrans);
+  glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
+  
+  glColorMask(true, true, true, false);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
@@ -329,7 +349,9 @@ GLfloat gCubeVertexData[324] =
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
   uniforms[UNIFORM_TEXTURE_MATRIX] = glGetUniformLocation(_program, "textureOffset");
-    // Release vertex and fragment shaders.
+  uniforms[UNIFORM_CAMERA_MATRIX] = glGetUniformLocation(_program, "cameraMatrix");
+  
+  // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(_program, vertShader);
         glDeleteShader(vertShader);

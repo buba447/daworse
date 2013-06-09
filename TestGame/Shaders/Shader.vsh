@@ -14,6 +14,7 @@ varying lowp vec4 colorVarying;
 varying lowp vec4 textureVarying;
 
 uniform mat4 modelViewProjectionMatrix;
+uniform mat4 cameraMatrix;
 uniform mat3 normalMatrix;
 uniform vec2 textureOffset;
 
@@ -29,5 +30,5 @@ void main()
     colorVarying[3] = 1.0;
     
     textureVarying = texture ;
-    gl_Position = modelViewProjectionMatrix * position;
+    gl_Position = cameraMatrix * modelViewProjectionMatrix * position;
 }
