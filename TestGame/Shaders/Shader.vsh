@@ -8,11 +8,14 @@
 
 attribute vec4 position;
 attribute vec3 normal;
+attribute vec4 texture;
 
 varying lowp vec4 colorVarying;
+varying lowp vec4 textureVarying;
 
 uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;
+uniform vec2 textureOffset;
 
 void main()
 {
@@ -23,6 +26,8 @@ void main()
     float nDotVP = max(0.0, dot(eyeNormal, normalize(lightPosition)));
                  
     colorVarying = diffuseColor * nDotVP;
+    colorVarying[3] = 1.0;
     
+    textureVarying = texture ;
     gl_Position = modelViewProjectionMatrix * position;
 }

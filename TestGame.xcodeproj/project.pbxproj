@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		48B569B51764E3C80015B527 /* photo_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 48B569B41764E3C80015B527 /* photo_selected.png */; };
 		48F55A9B176410A900184298 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9A176410A900184298 /* UIKit.framework */; };
 		48F55A9D176410A900184298 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9C176410A900184298 /* Foundation.framework */; };
 		48F55A9F176410A900184298 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9E176410A900184298 /* CoreGraphics.framework */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		48B569B41764E3C80015B527 /* photo_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photo_selected.png; sourceTree = "<group>"; };
 		48F55A97176410A900184298 /* TestGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48F55A9A176410A900184298 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		48F55A9C176410A900184298 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -96,6 +98,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		48B569B31764DAC50015B527 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				48F55ABC176410AA00184298 /* Shader.fsh */,
+				48F55ABE176410AA00184298 /* Shader.vsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
 		48F55A8E176410A900184298 = {
 			isa = PBXGroup;
 			children = (
@@ -135,8 +146,7 @@
 				48F55AAE176410AA00184298 /* AppDelegate.m */,
 				48F55AB6176410AA00184298 /* MainStoryboard_iPhone.storyboard */,
 				48F55AB9176410AA00184298 /* MainStoryboard_iPad.storyboard */,
-				48F55ABC176410AA00184298 /* Shader.fsh */,
-				48F55ABE176410AA00184298 /* Shader.vsh */,
+				48B569B31764DAC50015B527 /* Shaders */,
 				48F55AC0176410AA00184298 /* ViewController.h */,
 				48F55AC1176410AA00184298 /* ViewController.m */,
 				48F55AA5176410A900184298 /* Supporting Files */,
@@ -147,6 +157,7 @@
 		48F55AA5176410A900184298 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				48B569B41764E3C80015B527 /* photo_selected.png */,
 				48F55AA6176410A900184298 /* TestGame-Info.plist */,
 				48F55AA7176410A900184298 /* InfoPlist.strings */,
 				48F55AAA176410A900184298 /* main.m */,
@@ -256,6 +267,7 @@
 				48F55ABB176410AA00184298 /* MainStoryboard_iPad.storyboard in Resources */,
 				48F55ABD176410AA00184298 /* Shader.fsh in Resources */,
 				48F55ABF176410AA00184298 /* Shader.vsh in Resources */,
+				48B569B51764E3C80015B527 /* photo_selected.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,6 +495,7 @@
 				48F55ADC176410AA00184298 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		48F55ADD176410AA00184298 /* Build configuration list for PBXNativeTarget "TestGameTests" */ = {
 			isa = XCConfigurationList;
@@ -491,6 +504,7 @@
 				48F55ADF176410AA00184298 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

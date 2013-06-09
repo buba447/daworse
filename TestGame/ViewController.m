@@ -15,6 +15,7 @@ enum
 {
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
     UNIFORM_NORMAL_MATRIX,
+    UNIFORM_TEXTURE_MATRIX,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -24,63 +25,67 @@ enum
 {
     ATTRIB_VERTEX,
     ATTRIB_NORMAL,
+    ATTRIB_TEXTUREPOSITON,
     NUM_ATTRIBUTES
 };
 
-GLfloat gCubeVertexData[216] = 
+GLfloat gCubeVertexData[324] =
 {
     // Data layout for each line below is:
-    // positionX, positionY, positionZ,     normalX, normalY, normalZ,    textcoor x y z 
-    0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
+    // positionX, positionY, positionZ,     normalX, normalY, normalZ,    textcoor x y z
+  
+    0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,        1.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,        1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,        0.0f, 1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,        0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,        1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,        0.0f, 0.0f, 0.0f,
     
-    0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,        1.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,         1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,        0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,       0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,         1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,        0.0f, 0.0f, 0.0f,
     
-    -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,         1.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,        1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,         0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,        0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,        1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,        0.0f, 0.0f, 0.0f,
     
-    -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,        1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,      1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,        0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,       0.0f, 1.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,        1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,        0.0f, 0.0f, 0.0f,
     
-    0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,         1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,         0.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,         1.0f, 1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,        1.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,        0.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,        0.0f, 1.0f, 0.0f,
     
-    0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
-    -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f
+    0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,         1.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,        1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,         0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,       0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,         1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f,        0.0f, 0.0f, 0.0f
 };
 
 @interface ViewController () {
     GLuint _program;
-    
+  
+  GLKMatrix4 _textureMatrix;
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix3 _normalMatrix;
     float _rotation;
-  
+  float _textTrans;
+    GLuint _texture;
     GLuint _vertexArray;
     GLuint _vertexBuffer;
 }
@@ -141,29 +146,66 @@ GLfloat gCubeVertexData[216] =
     // Dispose of any resources that can be recreated.
 }
 
+- (void)loadTexture:(CGImageRef)image {
+  
+  GLuint width = CGImageGetWidth(image);
+  GLuint height = CGImageGetHeight(image);
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  // Allocate memory for image
+  void *imageData = malloc( height * width * 4 );
+  CGContextRef imgcontext = CGBitmapContextCreate( imageData, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
+  CGColorSpaceRelease( colorSpace );
+  CGContextClearRect( imgcontext, CGRectMake( 0, 0, width, height ) );
+  CGContextTranslateCTM( imgcontext, 0, height - height );
+  CGContextDrawImage( imgcontext, CGRectMake( 0, 0, width, height ), image );
+  
+  
+  glGenTextures(1, &_texture);
+  glBindTexture(GL_TEXTURE_2D, _texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+               0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+  free(imageData);
+  CGContextRelease(imgcontext);
+}
+
 - (void)setupGL
 {
     [EAGLContext setCurrentContext:self.context];
-    
+  
     [self loadShaders];
 
     glEnable(GL_DEPTH_TEST);
-    
+    glEnable(GL_TEXTURE_2D);
+  
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glShadeModel (GL_SMOOTH);
+  
+  
     glGenVertexArraysOES(1, &_vertexArray);
     glBindVertexArrayOES(_vertexArray);
-    
+  
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), BUFFER_OFFSET(0));
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), BUFFER_OFFSET(12));
- //   glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
- //   glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), BUFFER_OFFSET(24));
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), BUFFER_OFFSET(12));
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), BUFFER_OFFSET(24));
   
     glBindVertexArrayOES(0);
+  
+  [self loadTexture:[UIImage imageNamed:@"photo_selected.png"].CGImage];
 }
 
 - (void)tearDownGL
@@ -198,12 +240,14 @@ GLfloat gCubeVertexData[216] =
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.5f);
     modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation * 2, 0.0f, 1.0f, 0.0f);
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
-    
+  
+  
+  _textureMatrix = GLKMatrix4MakeTranslation(0.5f, 0.5f, 0.0f);
     _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    
-    _rotation += self.timeSinceLastUpdate * 0.5f;
+  _textTrans += self.timeSinceLastUpdate *0.2f;
+    _rotation += self.timeSinceLastUpdate * 0.05f;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -211,15 +255,18 @@ GLfloat gCubeVertexData[216] =
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    glBindVertexArrayOES(_vertexArray);
+    
+    
   
+  glBindVertexArrayOES(_vertexArray);
     // Render the object again with ES2
     glUseProgram(_program);
-    
+    glBindTexture(GL_TEXTURE_2D, _texture);
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-   // glBindTexture(GL_TEXTURE_2D, blah);
+  glUniform2f(uniforms[UNIFORM_TEXTURE_MATRIX], 0.f, _textTrans);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
@@ -256,7 +303,8 @@ GLfloat gCubeVertexData[216] =
     // This needs to be done prior to linking.
     glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
     glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
-    
+    glBindAttribLocation(_program, GLKVertexAttribTexCoord0, "texture");
+  
     // Link program.
     if (![self linkProgram:_program]) {
         NSLog(@"Failed to link program: %d", _program);
@@ -280,7 +328,7 @@ GLfloat gCubeVertexData[216] =
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
-    
+  uniforms[UNIFORM_TEXTURE_MATRIX] = glGetUniformLocation(_program, "textureOffset");
     // Release vertex and fragment shaders.
     if (vertShader) {
         glDetachShader(_program, vertShader);

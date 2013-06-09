@@ -8,11 +8,37 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "392485377.528533"
+         timestampString = "392495414.425868"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "203"
-         endingLineNumber = "203"
+         startingLineNumber = "247"
+         endingLineNumber = "247"
+         landmarkName = "-update"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "TestGame/ViewController.m"
+         timestampString = "392495414.425868"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "259"
+         endingLineNumber = "259"
+         landmarkName = "-glkView:drawInRect:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "TestGame/ViewController.m"
+         timestampString = "392495748.841553"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "250"
+         endingLineNumber = "250"
          landmarkName = "-update"
          landmarkType = "5">
       </FileBreakpoint>
