@@ -80,12 +80,13 @@ GLfloat gCubeVertexData[324] =
 
 @interface ViewController () {
     GLuint _program;
-  
+  BOOL anaglyph_;
   GLKMatrix4 _textureMatrix;
     GLKMatrix4 _modelViewProjectionMatrix;
   GLKMatrix4 _cameraProjectionMatrix;
     GLKMatrix3 _normalMatrix;
-    float _rotation;
+  CGPoint _rotation;
+  float _rotationDistance;
   float _textTrans;
     GLuint _texture;
     GLuint _vertexArray;
@@ -107,19 +108,33 @@ GLfloat gCubeVertexData[324] =
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+  anaglyph_ = NO;
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
     if (!self.context) {
         NSLog(@"Failed to create ES context");
     }
-    
+  _rotation = CGPointZero;
+  _rotation.x = 1;
+  _rotationDistance = 0;
     GLKView *view = (GLKView *)self.view;
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-  
+  UIPanGestureRecognizer *peterPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+  [self.view addGestureRecognizer:peterPan];
+
     
     [self setupGL];
+}
+
+
+- (void)handlePan:(UIPanGestureRecognizer *)gesture {
+  CGPoint velocity = [gesture velocityInView:self.view];
+  CGPoint translation = [gesture translationInView:self.view];
+  CGPoint vector;
+  _rotation.y = translation.x / fabs(translation.x + translation.y);
+  _rotation.x = translation.y / fabs(translation.x + translation.y);
+  _rotationDistance = sqrtf(pow(translation.x, 2) + pow(translation.y, 2)) / 100;
 }
 
 - (void)dealloc
@@ -229,16 +244,16 @@ GLfloat gCubeVertexData[324] =
 - (void)update
 {
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    _cameraProjectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(60.0f), aspect, 0.1f, 100.0f);
+    _cameraProjectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
    
   //Parent Matrix
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
-    baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 0.0f, 1.0f, 0.0f);
+    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -7.0f);
+    //baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 1.0f, 1.0f, 0.0f);
 
   
     // Compute the model view matrix for the object rendered with ES2
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.5f);
-    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotation * 2, 0.0f, 1.0f, 0.0f);
+    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
+    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotationDistance, _rotation.x, _rotation.y, 0.0f);
     modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
   
   
@@ -247,14 +262,13 @@ GLfloat gCubeVertexData[324] =
     
     _modelViewProjectionMatrix = modelViewMatrix;
   _textTrans += self.timeSinceLastUpdate *0.2f;
-    _rotation += self.timeSinceLastUpdate * 0.05f;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+  if (anaglyph_) 
     glColorMask(true, false, false, false);
     
   GLKMatrix4 leftEye = GLKMatrix4Rotate(GLKMatrix4Translate(_cameraProjectionMatrix, 0.2, 0.f, 0.f), GLKMathDegreesToRadians(-0.1f), 0.f, 1.f, 0.f);
@@ -265,14 +279,14 @@ GLfloat gCubeVertexData[324] =
     glBindTexture(GL_TEXTURE_2D, _texture);
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-  glUniformMatrix4fv(uniforms[UNIFORM_CAMERA_MATRIX], 1, 0, leftEye.m);
+  glUniformMatrix4fv(uniforms[UNIFORM_CAMERA_MATRIX], 1, 0, _cameraProjectionMatrix.m);
   
   glUniform2f(uniforms[UNIFORM_TEXTURE_MATRIX], 0.f, _textTrans);
     glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
   
   
     glBindTexture(GL_TEXTURE_2D, 0);
-
+    if (anaglyph_) {
   glClear(GL_DEPTH_BUFFER_BIT) ;
   glColorMask(false, true, true, false);
   glUseProgram(_program);
@@ -285,6 +299,7 @@ GLfloat gCubeVertexData[324] =
   glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
   
   glColorMask(true, true, true, false);
+    }
   glBindTexture(GL_TEXTURE_2D, 0);
 
 }

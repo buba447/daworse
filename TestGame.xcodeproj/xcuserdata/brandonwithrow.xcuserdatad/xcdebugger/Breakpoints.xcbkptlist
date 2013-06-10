@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "392505412.680389"
+         timestampString = "392571575.303453"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "247"
-         endingLineNumber = "247"
+         startingLineNumber = "262"
+         endingLineNumber = "262"
          landmarkName = "-update"
          landmarkType = "5">
       </FileBreakpoint>
@@ -21,11 +21,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "392505412.680389"
+         timestampString = "392571575.303453"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "259"
-         endingLineNumber = "259"
+         startingLineNumber = "273"
+         endingLineNumber = "273"
          landmarkName = "-glkView:drawInRect:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -34,12 +34,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "392505412.680389"
+         timestampString = "392571582.281329"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "250"
-         endingLineNumber = "250"
-         landmarkName = "-update"
+         startingLineNumber = "132"
+         endingLineNumber = "132"
+         landmarkName = "-handlePan:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
