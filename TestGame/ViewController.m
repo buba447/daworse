@@ -7,29 +7,14 @@
 //
 
 #import "ViewController.h"
+#import "BWShaderObject.h"
+#import "BWGraphObject.h"
+#import "BWModelObject.h"
+#import "BWCameraObject.h"
+#import "BWWorldTimeManager.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
-// Uniform index.
-enum
-{
-    UNIFORM_MODELVIEWPROJECTION_MATRIX,
-    UNIFORM_NORMAL_MATRIX,
-    UNIFORM_TEXTURE_MATRIX,
-    UNIFORM_CAMERA_MATRIX,
-    NUM_UNIFORMS
-};
-GLint uniforms[NUM_UNIFORMS];
-
-// Attribute index.
-enum
-{
-    ATTRIB_VERTEX,
-    ATTRIB_NORMAL,
-    ATTRIB_TEXTUREPOSITON,
-    NUM_ATTRIBUTES
-};
-
+#define ARC4RANDOM_MAX      0x100000000
 GLfloat gCubeVertexData[324] =
 {
     // Data layout for each line below is:
@@ -79,18 +64,19 @@ GLfloat gCubeVertexData[324] =
 };
 
 @interface ViewController () {
-    GLuint _program;
   BOOL anaglyph_;
-  GLKMatrix4 _textureMatrix;
-    GLKMatrix4 _modelViewProjectionMatrix;
-  GLKMatrix4 _cameraProjectionMatrix;
-    GLKMatrix3 _normalMatrix;
   CGPoint _rotation;
   float _rotationDistance;
   float _textTrans;
-    GLuint _texture;
-    GLuint _vertexArray;
-    GLuint _vertexBuffer;
+  GLuint _texture;
+  GLuint _texture2;
+  GLuint _vertexArray;
+  GLuint _vertexBuffer;
+  
+  BWCameraObject *mainCamera_;
+  BWShaderObject *currentShader_;
+  NSMutableArray *models_;
+  BWModelObject *heroModel_;
 }
 @property (strong, nonatomic) EAGLContext *context;
 
@@ -115,26 +101,79 @@ GLfloat gCubeVertexData[324] =
         NSLog(@"Failed to create ES context");
     }
   _rotation = CGPointZero;
-  _rotation.x = 1;
   _rotationDistance = 0;
-    GLKView *view = (GLKView *)self.view;
-    view.context = self.context;
-    view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+  
+  GLKView *view = (GLKView *)self.view;
+  view.context = self.context;
+  view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
   UIPanGestureRecognizer *peterPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
   [self.view addGestureRecognizer:peterPan];
 
-    
-    [self setupGL];
+  [self setupGL];
+  models_ = [[NSMutableArray alloc] init];
+  mainCamera_ = [[BWCameraObject alloc] init];
+//  mainCamera_.posZ = 10;
+  mainCamera_.rotX = -90;
+  mainCamera_.posY = 20;
+  UIButton *newButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+  [newButton addTarget:self action:@selector(addCube) forControlEvents:UIControlEventTouchUpInside];
+  newButton.frame = CGRectMake(0, 0, 100, 44);
+  [self.view addSubview:newButton];
+  heroModel_ = [[BWModelObject alloc] init];
+  heroModel_.vertexArray = _vertexArray;
+  heroModel_.shader = currentShader_;
+//  heroModel_.texture = _texture;
+  heroModel_.uvOffset = CGPointZero;
+  [heroModel_ addChild:mainCamera_];
+  [models_ addObject:heroModel_];
+  [self setupWorld];
+  BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
+  time.currentTime = 0;
+}
+
+- (void)setupWorld {
+  for (int i = 0; i < 100; i ++) {
+    BWModelObject *newModel = [[BWModelObject alloc] init];
+    newModel.vertexArray = _vertexArray;
+    newModel.shader = currentShader_;
+    newModel.texture = _texture;
+    newModel.rotX = i * 2;
+    newModel.rotY = i - 10;
+    newModel.uvOffset = CGPointZero;
+    newModel.posX = floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40;
+    newModel.posZ = floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40;
+    [models_ addObject:newModel];
+  }
+}
+
+- (void)addCube {
+  BWModelObject *newCube = [models_ objectAtIndex:0];
+  [newCube removeAllAnimationKeys];
+  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
+  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
+  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
+//  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
+//  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
+//  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
+//  [newCube addAnimationKeyForProperty:@"rotX" toValue:180 duration:2 delay:1];
+//  [newCube addAnimationKeyForProperty:@"rotX" toValue:0 duration:2];
+  [newCube addAnimationKeyForProperty:@"rotZ" toValue:90 duration:0.3 delay:0];
+  [newCube addAnimationKeyForProperty:@"rotZ" toValue:0 duration:2 delay:1];
+  BWModelObject *newCube2 = [models_ objectAtIndex:1];
+  [newCube2 addAnimationKeyForProperty:@"posX" toValue:4.2 duration:2.5];
+  [newCube2 addAnimationKeyForProperty:@"posX" toValue:1.2 duration:1.5];
 }
 
 
 - (void)handlePan:(UIPanGestureRecognizer *)gesture {
-  CGPoint velocity = [gesture velocityInView:self.view];
   CGPoint translation = [gesture translationInView:self.view];
-  CGPoint vector;
-  _rotation.y = translation.x / fabs(translation.x + translation.y);
-  _rotation.x = translation.y / fabs(translation.x + translation.y);
+  _rotation.y = translation.y / (self.view.bounds.size.height * 0.5);
+  _rotation.x = translation.x / (self.view.bounds.size.width * 0.5);
   _rotationDistance = sqrtf(pow(translation.x, 2) + pow(translation.y, 2)) / 100;
+  if (gesture.state == UIGestureRecognizerStateEnded ||
+      gesture.state == UIGestureRecognizerStateCancelled) {
+    _rotation = CGPointZero;
+  }
 }
 
 - (void)dealloc
@@ -144,6 +183,7 @@ GLfloat gCubeVertexData[324] =
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
+[super dealloc];
 }
 
 - (void)didReceiveMemoryWarning
@@ -233,9 +273,9 @@ GLfloat gCubeVertexData[324] =
     glDeleteBuffers(1, &_vertexBuffer);
     glDeleteVertexArraysOES(1, &_vertexArray);
     
-    if (_program) {
-        glDeleteProgram(_program);
-        _program = 0;
+    if (currentShader_.shaderProgram) {
+        glDeleteProgram(currentShader_.shaderProgram);
+        currentShader_.shaderProgram = 0;
     }
 }
 
@@ -243,65 +283,49 @@ GLfloat gCubeVertexData[324] =
 
 - (void)update
 {
-    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    _cameraProjectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
-   
-  //Parent Matrix
-    GLKMatrix4 baseModelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -7.0f);
-    //baseModelViewMatrix = GLKMatrix4Rotate(baseModelViewMatrix, _rotation, 1.0f, 1.0f, 0.0f);
+  BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
+  time.currentTime += self.timeSinceLastUpdate;
+  float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+  mainCamera_.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
+  [models_ makeObjectsPerformSelector:@selector(updateForAnimation)];
+//  NSLog(@"Gesture %f %f", _rotation.y, _rotation.x);
+  for (BWModelObject *mocel in models_) {
+    if (mocel != heroModel_) {
+      mocel.rotZ += 3;
+      mocel.rotY -= 5;
+      mocel.rotX += 3;
+    }
+  }
+  heroModel_.rotY -= (_rotation.x * 2);
+  GLKVector3 vector = GLKVector3Make(0, 0, _rotation.y);
+  GLKMatrix4 rotation = GLKMatrix4MakeRotation(GLKMathDegreesToRadians(heroModel_.rotX), 1, 0, 0);
+  rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(heroModel_.rotY), 0, 1, 0);
+  rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(heroModel_.rotZ), 0, 0, 1);
 
-  
-    // Compute the model view matrix for the object rendered with ES2
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
-    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, _rotationDistance, _rotation.x, _rotation.y, 0.0f);
-    modelViewMatrix = GLKMatrix4Multiply(baseModelViewMatrix, modelViewMatrix);
-  
-  
-  _textureMatrix = GLKMatrix4MakeTranslation(0.5f, 0.5f, 0.0f);
-    _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
-    _modelViewProjectionMatrix = modelViewMatrix;
+  GLKVector3 transformed_direction = GLKMatrix4MultiplyVector3(rotation, vector);
+  heroModel_.posZ += transformed_direction.z;
+  heroModel_.posY += transformed_direction.y;
+  heroModel_.posX += transformed_direction.x;
   _textTrans += self.timeSinceLastUpdate *0.2f;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if (anaglyph_) 
-    glColorMask(true, false, false, false);
-    
-  GLKMatrix4 leftEye = GLKMatrix4Rotate(GLKMatrix4Translate(_cameraProjectionMatrix, 0.2, 0.f, 0.f), GLKMathDegreesToRadians(-0.1f), 0.f, 1.f, 0.f);
-  GLKMatrix4 rightEye = GLKMatrix4Rotate(GLKMatrix4Translate(_cameraProjectionMatrix, 0.2, 0.f, 0.f), GLKMathDegreesToRadians(0.1f), 0.f, 1.f, 0.f);
-    glBindVertexArrayOES(_vertexArray);
-    // Render the object again with ES2
-    glUseProgram(_program);
-    glBindTexture(GL_TEXTURE_2D, _texture);
-    glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-  glUniformMatrix4fv(uniforms[UNIFORM_CAMERA_MATRIX], 1, 0, _cameraProjectionMatrix.m);
-  
-  glUniform2f(uniforms[UNIFORM_TEXTURE_MATRIX], 0.f, _textTrans);
-    glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
-  
-  
-    glBindTexture(GL_TEXTURE_2D, 0);
-    if (anaglyph_) {
-  glClear(GL_DEPTH_BUFFER_BIT) ;
-  glColorMask(false, true, true, false);
-  glUseProgram(_program);
-  glBindTexture(GL_TEXTURE_2D, _texture);
-  glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-  glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
-  glUniformMatrix4fv(uniforms[UNIFORM_CAMERA_MATRIX], 1, 0, rightEye.m);
-  
-  glUniform2f(uniforms[UNIFORM_TEXTURE_MATRIX], 0.f, _textTrans);
-  glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
-  
-  glColorMask(true, true, true, false);
-    }
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  for (BWModelObject *model in models_) {
+
+    glBindVertexArrayOES(model.vertexArray);
+    glUseProgram(model.shader.shaderProgram);
+    glBindTexture(GL_TEXTURE_2D, model.texture);
+    glUniformMatrix4fv(model.shader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, model.currentTransform).m);
+    glUniformMatrix3fv(model.shader.uniformNormalMatrix, 1, 0, model.normalMatrix.m);
+    glUniformMatrix4fv(model.shader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
+    glUniform2f(model.shader.uniformTextureUV, model.uvOffset.x, model.uvOffset.y);
+    glDrawArrays(GL_TRIANGLES, 0, (sizeof(gCubeVertexData) / (9 * sizeof(GLfloat))));
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
@@ -310,9 +334,9 @@ GLfloat gCubeVertexData[324] =
 {
     GLuint vertShader, fragShader;
     NSString *vertShaderPathname, *fragShaderPathname;
-    
+    currentShader_ = [[BWShaderObject alloc] init];
     // Create shader program.
-    _program = glCreateProgram();
+    currentShader_.shaderProgram = glCreateProgram();
     
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
@@ -320,7 +344,7 @@ GLfloat gCubeVertexData[324] =
         NSLog(@"Failed to compile vertex shader");
         return NO;
     }
-    
+  
     // Create and compile fragment shader.
     fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
@@ -329,20 +353,20 @@ GLfloat gCubeVertexData[324] =
     }
     
     // Attach vertex shader to program.
-    glAttachShader(_program, vertShader);
+    glAttachShader(currentShader_.shaderProgram, vertShader);
     
     // Attach fragment shader to program.
-    glAttachShader(_program, fragShader);
+    glAttachShader(currentShader_.shaderProgram, fragShader);
     
     // Bind attribute locations.
     // This needs to be done prior to linking.
-    glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
-    glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
-    glBindAttribLocation(_program, GLKVertexAttribTexCoord0, "texture");
+    glBindAttribLocation(currentShader_.shaderProgram, GLKVertexAttribPosition, "position");
+    glBindAttribLocation(currentShader_.shaderProgram, GLKVertexAttribNormal, "normal");
+    glBindAttribLocation(currentShader_.shaderProgram, GLKVertexAttribTexCoord0, "texture");
   
     // Link program.
-    if (![self linkProgram:_program]) {
-        NSLog(@"Failed to link program: %d", _program);
+    if (![self linkProgram:currentShader_.shaderProgram]) {
+        NSLog(@"Failed to link program: %d", currentShader_.shaderProgram);
         
         if (vertShader) {
             glDeleteShader(vertShader);
@@ -352,27 +376,27 @@ GLfloat gCubeVertexData[324] =
             glDeleteShader(fragShader);
             fragShader = 0;
         }
-        if (_program) {
-            glDeleteProgram(_program);
-            _program = 0;
+        if (currentShader_.shaderProgram) {
+            glDeleteProgram(currentShader_.shaderProgram);
+            currentShader_.shaderProgram = 0;
         }
         
         return NO;
     }
     
     // Get uniform locations.
-    uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
-  uniforms[UNIFORM_TEXTURE_MATRIX] = glGetUniformLocation(_program, "textureOffset");
-  uniforms[UNIFORM_CAMERA_MATRIX] = glGetUniformLocation(_program, "cameraMatrix");
+  currentShader_.uniformModelMatrix = glGetUniformLocation(currentShader_.shaderProgram, "modelViewProjectionMatrix");
+  currentShader_.uniformNormalMatrix = glGetUniformLocation(currentShader_.shaderProgram, "normalMatrix");
+  currentShader_.uniformTextureUV = glGetUniformLocation(currentShader_.shaderProgram, "textureOffset");
+  currentShader_.uniformCameraMatrix = glGetUniformLocation(currentShader_.shaderProgram, "cameraMatrix");
   
   // Release vertex and fragment shaders.
     if (vertShader) {
-        glDetachShader(_program, vertShader);
+        glDetachShader(currentShader_.shaderProgram, vertShader);
         glDeleteShader(vertShader);
     }
     if (fragShader) {
-        glDetachShader(_program, fragShader);
+        glDetachShader(currentShader_.shaderProgram, fragShader);
         glDeleteShader(fragShader);
     }
     

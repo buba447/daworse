@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		48254E99176CE6D50021F0EF /* BWKeyframe.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E98176CE6D50021F0EF /* BWKeyframe.m */; };
+		48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */; };
+		48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */; };
+		48B029B1176952BA00396E28 /* BWGraphObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B0176952BA00396E28 /* BWGraphObject.m */; };
+		48B029B41769543600396E28 /* BWShaderObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B31769543600396E28 /* BWShaderObject.m */; };
+		48B029B717695A3A00396E28 /* BWModelObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B617695A3A00396E28 /* BWModelObject.m */; };
+		48B029BA17696A7D00396E28 /* BWCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B917696A7D00396E28 /* BWCameraObject.m */; };
 		48B569B51764E3C80015B527 /* photo_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 48B569B41764E3C80015B527 /* photo_selected.png */; };
 		48F55A9B176410A900184298 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9A176410A900184298 /* UIKit.framework */; };
 		48F55A9D176410A900184298 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9C176410A900184298 /* Foundation.framework */; };
@@ -42,6 +49,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		48254E97176CE6D50021F0EF /* BWKeyframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWKeyframe.h; sourceTree = "<group>"; };
+		48254E98176CE6D50021F0EF /* BWKeyframe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWKeyframe.m; sourceTree = "<group>"; };
+		48254E9D176CFFEC0021F0EF /* BWAnimationTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWAnimationTrack.h; sourceTree = "<group>"; };
+		48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWAnimationTrack.m; sourceTree = "<group>"; };
+		48254EAC176D17FA0021F0EF /* BWWorldTimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWWorldTimeManager.h; sourceTree = "<group>"; };
+		48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWWorldTimeManager.m; sourceTree = "<group>"; };
+		48B029AF176952BA00396E28 /* BWGraphObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWGraphObject.h; sourceTree = "<group>"; };
+		48B029B0176952BA00396E28 /* BWGraphObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWGraphObject.m; sourceTree = "<group>"; };
+		48B029B21769543600396E28 /* BWShaderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWShaderObject.h; sourceTree = "<group>"; };
+		48B029B31769543600396E28 /* BWShaderObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWShaderObject.m; sourceTree = "<group>"; };
+		48B029B517695A3A00396E28 /* BWModelObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWModelObject.h; sourceTree = "<group>"; };
+		48B029B617695A3A00396E28 /* BWModelObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWModelObject.m; sourceTree = "<group>"; };
+		48B029B817696A7D00396E28 /* BWCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCameraObject.h; sourceTree = "<group>"; };
+		48B029B917696A7D00396E28 /* BWCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWCameraObject.m; sourceTree = "<group>"; };
 		48B569B41764E3C80015B527 /* photo_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photo_selected.png; sourceTree = "<group>"; };
 		48F55A97176410A900184298 /* TestGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48F55A9A176410A900184298 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -149,6 +170,20 @@
 				48B569B31764DAC50015B527 /* Shaders */,
 				48F55AC0176410AA00184298 /* ViewController.h */,
 				48F55AC1176410AA00184298 /* ViewController.m */,
+				48254E9D176CFFEC0021F0EF /* BWAnimationTrack.h */,
+				48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */,
+				48254E97176CE6D50021F0EF /* BWKeyframe.h */,
+				48254E98176CE6D50021F0EF /* BWKeyframe.m */,
+				48254EAC176D17FA0021F0EF /* BWWorldTimeManager.h */,
+				48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */,
+				48B029B21769543600396E28 /* BWShaderObject.h */,
+				48B029B31769543600396E28 /* BWShaderObject.m */,
+				48B029AF176952BA00396E28 /* BWGraphObject.h */,
+				48B029B0176952BA00396E28 /* BWGraphObject.m */,
+				48B029B517695A3A00396E28 /* BWModelObject.h */,
+				48B029B617695A3A00396E28 /* BWModelObject.m */,
+				48B029B817696A7D00396E28 /* BWCameraObject.h */,
+				48B029B917696A7D00396E28 /* BWCameraObject.m */,
 				48F55AA5176410A900184298 /* Supporting Files */,
 			);
 			path = TestGame;
@@ -305,6 +340,13 @@
 				48F55AAB176410A900184298 /* main.m in Sources */,
 				48F55AAF176410AA00184298 /* AppDelegate.m in Sources */,
 				48F55AC2176410AA00184298 /* ViewController.m in Sources */,
+				48B029B1176952BA00396E28 /* BWGraphObject.m in Sources */,
+				48B029B41769543600396E28 /* BWShaderObject.m in Sources */,
+				48B029B717695A3A00396E28 /* BWModelObject.m in Sources */,
+				48B029BA17696A7D00396E28 /* BWCameraObject.m in Sources */,
+				48254E99176CE6D50021F0EF /* BWKeyframe.m in Sources */,
+				48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */,
+				48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,7 +410,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
@@ -400,7 +442,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
