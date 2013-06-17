@@ -15,5 +15,5 @@
 @property (nonatomic, assign) GLint uniformNormalMatrix;
 @property (nonatomic, assign) GLint uniformCameraMatrix;
 @property (nonatomic, assign) GLint uniformTextureUV;
-
+@property (nonatomic, assign) GLint uniformDiffuse;
 @end

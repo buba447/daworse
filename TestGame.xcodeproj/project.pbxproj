@@ -10,6 +10,20 @@
 		48254E99176CE6D50021F0EF /* BWKeyframe.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E98176CE6D50021F0EF /* BWKeyframe.m */; };
 		48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */; };
 		48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */; };
+		488301C1176E53790018F184 /* BWMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 488301C0176E53790018F184 /* BWMesh.m */; };
+		488301D4176F526A0018F184 /* testExport2.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301D3176F526A0018F184 /* testExport2.mdl */; };
+		488301D5176F526A0018F184 /* testExport2.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301D3176F526A0018F184 /* testExport2.mdl */; };
+		488301DE176F5ACA0018F184 /* ship.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301DD176F5ACA0018F184 /* ship.mdl */; };
+		488301E0176F5B470018F184 /* ship2.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301DF176F5B470018F184 /* ship2.mdl */; };
+		488301E1176F5B470018F184 /* ship2.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301DF176F5B470018F184 /* ship2.mdl */; };
+		488301E3176F5B820018F184 /* ship3.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301E2176F5B820018F184 /* ship3.mdl */; };
+		488301E4176F5B820018F184 /* ship3.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301E2176F5B820018F184 /* ship3.mdl */; };
+		488301E7176F5CB90018F184 /* leftJet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301E5176F5CB90018F184 /* leftJet.mdl */; };
+		488301E8176F5CB90018F184 /* leftJet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301E5176F5CB90018F184 /* leftJet.mdl */; };
+		488301E9176F5CB90018F184 /* rightJet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301E6176F5CB90018F184 /* rightJet.mdl */; };
+		488301EA176F5CB90018F184 /* rightJet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301E6176F5CB90018F184 /* rightJet.mdl */; };
+		488301EC176F5EB40018F184 /* rightJet2.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301EB176F5EB40018F184 /* rightJet2.mdl */; };
+		488301ED176F5EB40018F184 /* rightJet2.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301EB176F5EB40018F184 /* rightJet2.mdl */; };
 		48B029B1176952BA00396E28 /* BWGraphObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B0176952BA00396E28 /* BWGraphObject.m */; };
 		48B029B41769543600396E28 /* BWShaderObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B31769543600396E28 /* BWShaderObject.m */; };
 		48B029B717695A3A00396E28 /* BWModelObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B029B617695A3A00396E28 /* BWModelObject.m */; };
@@ -55,6 +69,15 @@
 		48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWAnimationTrack.m; sourceTree = "<group>"; };
 		48254EAC176D17FA0021F0EF /* BWWorldTimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWWorldTimeManager.h; sourceTree = "<group>"; };
 		48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWWorldTimeManager.m; sourceTree = "<group>"; };
+		488301BF176E53790018F184 /* BWMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWMesh.h; sourceTree = "<group>"; };
+		488301C0176E53790018F184 /* BWMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWMesh.m; sourceTree = "<group>"; };
+		488301D3176F526A0018F184 /* testExport2.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = testExport2.mdl; sourceTree = "<group>"; };
+		488301DD176F5ACA0018F184 /* ship.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = ship.mdl; sourceTree = "<group>"; };
+		488301DF176F5B470018F184 /* ship2.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = ship2.mdl; sourceTree = "<group>"; };
+		488301E2176F5B820018F184 /* ship3.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = ship3.mdl; sourceTree = "<group>"; };
+		488301E5176F5CB90018F184 /* leftJet.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = leftJet.mdl; sourceTree = "<group>"; };
+		488301E6176F5CB90018F184 /* rightJet.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = rightJet.mdl; sourceTree = "<group>"; };
+		488301EB176F5EB40018F184 /* rightJet2.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = rightJet2.mdl; sourceTree = "<group>"; };
 		48B029AF176952BA00396E28 /* BWGraphObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWGraphObject.h; sourceTree = "<group>"; };
 		48B029B0176952BA00396E28 /* BWGraphObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWGraphObject.m; sourceTree = "<group>"; };
 		48B029B21769543600396E28 /* BWShaderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWShaderObject.h; sourceTree = "<group>"; };
@@ -167,9 +190,18 @@
 				48F55AAE176410AA00184298 /* AppDelegate.m */,
 				48F55AB6176410AA00184298 /* MainStoryboard_iPhone.storyboard */,
 				48F55AB9176410AA00184298 /* MainStoryboard_iPad.storyboard */,
+				488301D3176F526A0018F184 /* testExport2.mdl */,
+				488301DD176F5ACA0018F184 /* ship.mdl */,
+				488301DF176F5B470018F184 /* ship2.mdl */,
+				488301E2176F5B820018F184 /* ship3.mdl */,
+				488301E5176F5CB90018F184 /* leftJet.mdl */,
+				488301E6176F5CB90018F184 /* rightJet.mdl */,
+				488301EB176F5EB40018F184 /* rightJet2.mdl */,
 				48B569B31764DAC50015B527 /* Shaders */,
 				48F55AC0176410AA00184298 /* ViewController.h */,
 				48F55AC1176410AA00184298 /* ViewController.m */,
+				488301BF176E53790018F184 /* BWMesh.h */,
+				488301C0176E53790018F184 /* BWMesh.m */,
 				48254E9D176CFFEC0021F0EF /* BWAnimationTrack.h */,
 				48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */,
 				48254E97176CE6D50021F0EF /* BWKeyframe.h */,
@@ -303,6 +335,12 @@
 				48F55ABD176410AA00184298 /* Shader.fsh in Resources */,
 				48F55ABF176410AA00184298 /* Shader.vsh in Resources */,
 				48B569B51764E3C80015B527 /* photo_selected.png in Resources */,
+				488301D4176F526A0018F184 /* testExport2.mdl in Resources */,
+				488301E0176F5B470018F184 /* ship2.mdl in Resources */,
+				488301E3176F5B820018F184 /* ship3.mdl in Resources */,
+				488301E7176F5CB90018F184 /* leftJet.mdl in Resources */,
+				488301E9176F5CB90018F184 /* rightJet.mdl in Resources */,
+				488301EC176F5EB40018F184 /* rightJet2.mdl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,6 +349,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				48F55AD4176410AA00184298 /* InfoPlist.strings in Resources */,
+				488301D5176F526A0018F184 /* testExport2.mdl in Resources */,
+				488301DE176F5ACA0018F184 /* ship.mdl in Resources */,
+				488301E1176F5B470018F184 /* ship2.mdl in Resources */,
+				488301E4176F5B820018F184 /* ship3.mdl in Resources */,
+				488301E8176F5CB90018F184 /* leftJet.mdl in Resources */,
+				488301EA176F5CB90018F184 /* rightJet.mdl in Resources */,
+				488301ED176F5EB40018F184 /* rightJet2.mdl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +392,7 @@
 				48254E99176CE6D50021F0EF /* BWKeyframe.m in Sources */,
 				48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */,
 				48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */,
+				488301C1176E53790018F184 /* BWMesh.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

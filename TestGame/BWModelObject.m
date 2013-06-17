@@ -19,6 +19,7 @@
   self = [super init];
   if (self) {
     _texture = 0;
+    _diffuseColor = GLKVector4Make(0, 0, 0, 1);
     _uvOffset = CGPointZero;
   }
   return self;

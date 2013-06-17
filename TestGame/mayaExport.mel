@@ -1,0 +1,68 @@
+proc float truncateNumber(float $number) {
+    
+    int $precision = 3;
+    int $multiplier = `pow 10 $precision`;
+    float $tempMult = floor($number * $multiplier);
+
+    float $result = $tempMult / $multiplier;
+
+    return $result;
+}
+
+proc test3(string $fileName) {
+string $returnString = "{\"vertices\": [";
+string $select[] = `ls -sl`;
+float $returnFloats[];
+int $nVerts[] = `polyEvaluate -f ($select[0])`;
+
+string $filePath = "/Users/brandonwithrow/Desktop/";  
+$filePath = $filePath + $fileName + ".mdl";
+// Open Your File  
+$fileId = `fopen $filePath "a"` ;  
+
+for ($count = 0; $count < $nVerts[0]; $count++) {
+
+string $plcc[] = `polyListComponentConversion -ff -tvf ($select[0]+".f["+$count+"]")`;
+
+// Expand the list to avoid Maya's component compression
+$plcc = `filterExpand -sm 70 -ex true $plcc`;
+print ("Face" + $count +"\r");
+
+for ( $vtxFace in $plcc )
+{
+  // Get the per-vertex per-face normal for this component
+  print "   ";
+  string $vtx[] = `polyListComponentConversion -fvf -tv $vtxFace`;
+  float $fzTmpCoords[3] = `xform -q -os -t $vtx`;
+  print(  $vtx[0] + ": { " + truncateNumber($fzTmpCoords[0]) + ", " + truncateNumber($fzTmpCoords[1]) + ", " + truncateNumber($fzTmpCoords[2]) + " }\n" );
+  fwrite $fileId `truncateNumber($fzTmpCoords[0])`;
+  fwrite $fileId `truncateNumber($fzTmpCoords[1])`;
+  fwrite $fileId `truncateNumber($fzTmpCoords[2])`;
+  $returnString = $returnString + truncateNumber($fzTmpCoords[0]) + ", " + truncateNumber($fzTmpCoords[1]) + ", " + truncateNumber($fzTmpCoords[2]);
+  
+  print "   ";
+  float $normal[3] = `polyNormalPerVertex -q -xyz $vtxFace`;
+  print(  $vtxFace + ": { " + truncateNumber($normal[0]) + ", " + truncateNumber($normal[1]) + ", " + truncateNumber($normal[2]) + " }\n" );
+  fwrite $fileId `truncateNumber($normal[0])`;
+  fwrite $fileId `truncateNumber($normal[1])`;
+  fwrite $fileId `truncateNumber($normal[2])`;
+  
+   $returnString = $returnString + ", " +  truncateNumber($normal[0]) + ", " + truncateNumber($normal[1]) + ", " + truncateNumber($normal[2]);
+   
+  print "   ";
+  string $uv[] = `polyListComponentConversion -fvf -tuv $vtxFace`;
+  float $uvCoords[2] = `polyEditUV -q -u -v $uv[0]`;
+  print(  $uv[0] + ": { " + truncateNumber($uvCoords[0]) + ", " + truncateNumber($uvCoords[1]) + ", 0.0" + " }\n\n" );
+  fwrite $fileId `truncateNumber($uvCoords[0])`;
+  fwrite $fileId `truncateNumber($uvCoords[1])`;
+  fwrite $fileId 0.0;
+  $returnString = $returnString + ", " + truncateNumber($uvCoords[0]) + ", " + truncateNumber($uvCoords[1]) + ", 0.0" + ", ";
+}
+print "\r";
+}
+$newstring = `substring $returnString 1 (size($returnString)-2)`;
+$returnString = $newstring + "]}";
+print $returnString;
+
+fclose $fileId ; 
+}

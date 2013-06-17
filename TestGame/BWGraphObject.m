@@ -42,6 +42,7 @@
   GLKMatrix4 rotation = GLKMatrix4MakeRotation(GLKMathDegreesToRadians(_rotX), 1, 0, 0);
   rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(_rotY), 0, 1, 0);
   rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(_rotZ), 0, 0, 1);
+  rotation = GLKMatrix4Scale(rotation, _scaleX, _scaleY, _scaleZ);
   GLKMatrix4 xform = GLKMatrix4Multiply(GLKMatrix4Translate(_transformIdentity, _posX, _posY, _posZ),
                                         rotation);
   if (_parentObject) {
