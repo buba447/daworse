@@ -10,21 +10,23 @@
 #import <GLKit/GLKit.h>
 
 @interface BWGraphObject : NSObject
-@property (nonatomic, assign) float posX;
-@property (nonatomic, assign) float posY;
-@property (nonatomic, assign) float posZ;
-@property (nonatomic, assign) float rotX;
-@property (nonatomic, assign) float rotY;
-@property (nonatomic, assign) float rotZ;
-@property (nonatomic, assign) float scaleX;
-@property (nonatomic, assign) float scaleY;
-@property (nonatomic, assign) float scaleZ;
-@property (nonatomic, assign) BOOL relativeTransform;
+@property (nonatomic, readonly) GLKVector3 facingVector;
+@property (nonatomic, readonly) GLKVector3 movementVector;
+@property (nonatomic, readonly) GLKVector3 worldTranslation;
+
+@property (nonatomic, assign) GLKVector3 translation;
+@property (nonatomic, assign) GLKVector3 rotation;
+@property (nonatomic, assign) GLKVector3 scale;
+
 @property (nonatomic, assign) GLKMatrix4 transformIdentity;
-@property (nonatomic, readonly) GLKMatrix4 currentTransform;
+@property (nonatomic, assign) GLKMatrix4 currentTransform;
 
 @property (nonatomic, assign) BWGraphObject *parentObject;
 @property (nonatomic, retain) NSArray *children;
+
+@property (nonatomic, readonly) BOOL hasMovedSinceLastFrame;
+
+- (void)commitTransforms;
 
 - (void)removeChild:(BWGraphObject *)child;
 - (void)addChild:(BWGraphObject *)child;

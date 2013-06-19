@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393356509.589767"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "368"
-         endingLineNumber = "368"
+         startingLineNumber = "418"
+         endingLineNumber = "418"
          landmarkName = "-glkView:drawInRect:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -21,24 +21,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393356509.589767"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "374"
-         endingLineNumber = "374"
-         landmarkName = "-glkView:drawInRect:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "No"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "315"
-         endingLineNumber = "315"
+         startingLineNumber = "400"
+         endingLineNumber = "400"
          landmarkName = "-update"
          landmarkType = "5">
       </FileBreakpoint>
@@ -47,12 +34,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/BWGraphObject.m"
-         timestampString = "393179631.089182"
+         timestampString = "393346135.967252"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "86"
-         endingLineNumber = "86"
-         landmarkName = "-addAnimationKeyForProperty:toValue:duration:delay:"
+         startingLineNumber = "98"
+         endingLineNumber = "98"
+         landmarkName = "-addAnimationKeyForProperty:toValue:duration:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -86,11 +73,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393355043.334644"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "222"
-         endingLineNumber = "222"
+         startingLineNumber = "263"
+         endingLineNumber = "263"
          landmarkName = "-loadMeshAtFile:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -99,11 +86,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393355043.334644"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "221"
-         endingLineNumber = "221"
+         startingLineNumber = "262"
+         endingLineNumber = "262"
          landmarkName = "-loadMeshAtFile:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -112,11 +99,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393355043.334644"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "205"
-         endingLineNumber = "205"
+         startingLineNumber = "238"
+         endingLineNumber = "238"
          landmarkName = "-loadMeshAtFile:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -125,11 +112,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393355043.334644"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "197"
-         endingLineNumber = "197"
+         startingLineNumber = "224"
+         endingLineNumber = "224"
          landmarkName = "-loadMeshAtFile:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -138,25 +125,25 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         timestampString = "393356255.94905"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "339"
-         endingLineNumber = "339"
-         landmarkName = "-update"
+         startingLineNumber = "315"
+         endingLineNumber = "315"
+         landmarkName = "-loadDebugMesh:withSize:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "TestGame/ViewController.m"
-         timestampString = "393181241.886544"
+         filePath = "TestGame/BWGraphObject.m"
+         timestampString = "393346478.747562"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "338"
-         endingLineNumber = "338"
-         landmarkName = "-update"
+         startingLineNumber = "55"
+         endingLineNumber = "55"
+         landmarkName = "-commitTransforms"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

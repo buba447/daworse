@@ -25,8 +25,9 @@
   return self;
 }
 
-- (GLKMatrix3)normalMatrix {
-  return GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(self.currentTransform), NULL);
+- (void)commitTransforms {
+  [super commitTransforms];
+  _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(self.currentTransform), NULL);
 }
 
 @end

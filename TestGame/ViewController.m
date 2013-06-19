@@ -17,25 +17,83 @@
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 #define ARC4RANDOM_MAX      0x100000000
 
+GLfloat normalVertices[36] = {
+  0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+  0.f, 0.f, 0.f, 0.f, 0.f, 1.f,
+  0.f, 1.f, 0.f, 0.f, 1.f, 0.f,
+  0.f, 0.f, 0.f, 0.f, 1.f, 0.f,
+  1.f, 0.f, 0.f, 1.f, 0.f, 0.f,
+  0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
+};
+
+GLfloat gridLine [264] = {
+  -5.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, -4.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, -4.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, -3.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, -3.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, -2.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, -2.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, -1.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, -1.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 0.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 0.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 4.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 4.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 3.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 3.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 2.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 2.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 1.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 1.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  -5.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  -4.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  -4.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  -3.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  -3.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  -2.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  -2.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  -1.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  -1.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  0.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  0.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  5.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  4.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  4.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  3.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  3.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  2.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  2.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f,
+  1.f, 0.f, -5.f, 0.5f, 0.5f, 0.5f,
+  1.f, 0.f, 5.f, 0.5f, 0.5f, 0.5f
+};
+
+
 @interface ViewController () {
   BOOL anaglyph_;
+  BOOL debugMode_;
   CGPoint _rotation;
   float _rotationDistance;
   float _textTrans;
-
+  NSMutableArray *debugGeometry_;
   BWCameraObject *mainCamera_;
-  BWShaderObject *currentShader_;
+  NSMutableArray *shaders_;
   NSMutableArray *meshes_;
   NSMutableArray *models_;
   NSDictionary *textures_;
   BWModelObject *heroModel_;
+  BWGraphObject *graphTree_;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
 
 - (void)setupGL;
 - (void)tearDownGL;
-- (BOOL)loadShaders;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
@@ -46,9 +104,13 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+//  self.preferredFramesPerSecond = 60;
   anaglyph_ = NO;
+  debugMode_ = YES;
   _rotation = CGPointZero;
   _rotationDistance = 0;
+  shaders_ = [[NSMutableArray alloc] init];
+  debugGeometry_ = [[NSMutableArray alloc] init];
   meshes_ = [[NSMutableArray alloc] init];
   textures_ = [[NSMutableDictionary alloc] init];
   self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -65,46 +127,25 @@
   
   [self setupGL];
   
+  graphTree_ = [[BWGraphObject alloc] init];
   models_ = [[NSMutableArray alloc] init];
   mainCamera_ = [[BWCameraObject alloc] init];
-//  mainCamera_.posZ = 10;
-  mainCamera_.rotX = -90;
-  mainCamera_.posY = 10;
+  mainCamera_.rotation = GLKVector3Make(-45, 0, 0);
+  mainCamera_.translation = GLKVector3Make(0, 15, 15);
   UIButton *newButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
   [newButton addTarget:self action:@selector(addCube) forControlEvents:UIControlEventTouchUpInside];
   newButton.frame = CGRectMake(0, 0, 100, 44);
   [self.view addSubview:newButton];
   heroModel_ = [[BWModelObject alloc] init];
   heroModel_.mesh = [meshes_ objectAtIndex:0];
-  heroModel_.shader = currentShader_;
-  heroModel_.texture = 0;
-  heroModel_.scaleX = 1.5;
-  heroModel_.scaleY = 1.5;
-  heroModel_.scaleZ = 1.5;
+  heroModel_.shader = [shaders_ objectAtIndex:0];
+  heroModel_.texture = [[textures_ valueForKey:@"test.png"] intValue];
   heroModel_.diffuseColor = GLKVector4Make(0.3, 0.45, 0.6, 1);
   heroModel_.uvOffset = CGPointZero;
   [heroModel_ addChild:mainCamera_];
+  [graphTree_ addChild:heroModel_];
   [models_ addObject:heroModel_];
   
-  BWModelObject *leftJet = [[BWModelObject alloc] init];
-  leftJet.shader = currentShader_;
-  leftJet.mesh = [meshes_ objectAtIndex:2];
-  leftJet.uvOffset = CGPointZero;
-  leftJet.hidden = YES;
-
-  [heroModel_ addChild:leftJet];
-  [models_ addObject:leftJet];
-  
-  BWModelObject *rightJet = [[BWModelObject alloc] init];
-  rightJet.shader = currentShader_;
-  rightJet.mesh = [meshes_ objectAtIndex:3];
-  rightJet.uvOffset = CGPointZero;
-  rightJet.hidden = YES;
-  [heroModel_ addChild:rightJet];
-  [models_ addObject:rightJet];
-  
-  [leftJet release];
-  [rightJet release];
   
   [self setupWorld];
   BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
@@ -203,7 +244,7 @@
   
   glGenBuffers(1, &newVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, newVertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(floatArray), floatArray, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(floatArray), &floatArray, GL_STATIC_DRAW);
   
   glEnableVertexAttribArray(GLKVertexAttribPosition);
   glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), BUFFER_OFFSET(0));
@@ -226,19 +267,61 @@
 - (void)setupGL {
   [EAGLContext setCurrentContext:self.context];
 
-  [self loadShaders];
+  NSDictionary *uniforms = @{@"modelViewProjectionMatrix": @"uniformModelMatrix",
+                             @"normalMatrix" : @"uniformNormalMatrix",
+                             @"textureOffset" : @"uniformTextureUV",
+                             @"cameraMatrix" : @"uniformCameraMatrix",
+                             @"diffuseColor" : @"uniformDiffuse"};
+  
+  NSDictionary *attributes = @{@"position": @(GLKVertexAttribPosition),
+                               @"normal" : @(GLKVertexAttribNormal),
+                               @"texture" : @(GLKVertexAttribTexCoord0)};
 
+  [self loadShaderNamed:@"Shader" withVertexAttributes:attributes andUniforms:uniforms];
+
+  [self loadShaderNamed:@"LineShader" withVertexAttributes:@{@"position" : @(GLKVertexAttribPosition), @"color" : @(GLKVertexAttribColor)} andUniforms:@{@"modelViewProjectionMatrix": @"uniformModelMatrix", @"cameraMatrix" : @"uniformCameraMatrix"}];
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_TEXTURE_2D);
-  [self loadMeshAtFile:@"ship3"];
+  [self loadMeshAtFile:@"hornet2"];
   [self loadMeshAtFile:@"testExport2"];
   [self loadMeshAtFile:@"leftJet"];
   [self loadMeshAtFile:@"rightJet2"];
+  
+  [self loadDebugMesh:normalVertices withSize:sizeof(normalVertices)];
+  [self loadDebugMesh:gridLine withSize:sizeof(gridLine)];
+  
+  
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glShadeModel (GL_SMOOTH);
-  [self loadTextureNamed:@"photo_selected.png"];
+  [self loadTextureNamed:@"test.png"];
 
+}
+
+- (void)loadDebugMesh:(GLfloat[])mesh withSize:(size_t)size {
+
+  GLuint newVertexArray;
+  GLuint newVertexBuffer;
+  
+  glGenVertexArraysOES(1, &newVertexArray);
+  glBindVertexArrayOES(newVertexArray);
+  
+  glGenBuffers(1, &newVertexBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, newVertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, size, mesh, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(GLKVertexAttribPosition);
+  glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), BUFFER_OFFSET(0));
+  glEnableVertexAttribArray(GLKVertexAttribColor);
+  glVertexAttribPointer(GLKVertexAttribColor, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), BUFFER_OFFSET(12));
+  
+  BWMesh *normalMesh = [[BWMesh alloc] init];
+  normalMesh.vertexArray = newVertexArray;
+  normalMesh.vertexBuffer = newVertexBuffer;
+  normalMesh.vertexCount = size / sizeof(GLfloat);
+  [debugGeometry_ addObject:normalMesh];
+  [normalMesh release];
+  
+  glBindVertexArrayOES(0);
 }
 
 - (void)tearDownGL
@@ -251,9 +334,11 @@
     glDeleteVertexArraysOES(1, &vertexArray);
     [meshes_ removeObject:mesh];
   }
-  if (currentShader_.shaderProgram) {
-      glDeleteProgram(currentShader_.shaderProgram);
-      currentShader_.shaderProgram = 0;
+  for (BWShaderObject *shader in shaders_) {
+    if (shader.shaderProgram) {
+      glDeleteProgram(shader.shaderProgram);
+      shader.shaderProgram = 0;
+    }
   }
 }
 
@@ -262,33 +347,33 @@
     BWModelObject *newModel = [[BWModelObject alloc] init];
 //    newMod el.vertexArray = _vertexArray;
     newModel.mesh = [meshes_ objectAtIndex:1];
-    newModel.shader = currentShader_;
-    newModel.rotX = i * 2;
-    newModel.rotY = i - 10;
-    newModel.scaleX = floorf(((double)arc4random() / ARC4RANDOM_MAX) * 2.0f) + 0.5;
-    newModel.scaleY = newModel.scaleX;
-    newModel.scaleZ = newModel.scaleX;
+    newModel.shader = [shaders_ objectAtIndex:0];
     newModel.diffuseColor = GLKVector4Make(0.5, 0.4, 0.3, 1);
     newModel.uvOffset = CGPointZero;
-    newModel.posX = floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40;
-    newModel.posZ = floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40;
+    newModel.translation = GLKVector3Make(floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40,
+                                          0,
+                                          floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40);
+
     [models_ addObject:newModel];
+    [graphTree_ addChild:newModel];
   }
+  [graphTree_ commitTransforms];
 }
 
 - (void)addCube {
-  BWModelObject *newCube = [models_ objectAtIndex:0];
-  [newCube removeAllAnimationKeys];
-  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
-  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
-  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
+  debugMode_ = !debugMode_;
+//  BWModelObject *newCube = [models_ objectAtIndex:0];
+//  [newCube removeAllAnimationKeys];
+//  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
+//  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
+//  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
   //  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
   //  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
   //  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
   //  [newCube addAnimationKeyForProperty:@"rotX" toValue:180 duration:2 delay:1];
   //  [newCube addAnimationKeyForProperty:@"rotX" toValue:0 duration:2];
-  [newCube addAnimationKeyForProperty:@"rotZ" toValue:90 duration:0.3 delay:0];
-  [newCube addAnimationKeyForProperty:@"rotZ" toValue:0 duration:2 delay:1];
+//  [newCube addAnimationKeyForProperty:@"rotZ" toValue:90 duration:0.3 delay:0];
+//  [newCube addAnimationKeyForProperty:@"rotZ" toValue:0 duration:2 delay:1];
 //  BWModelObject *newCube2 = [models_ objectAtIndex:1];
 //  [newCube2 addAnimationKeyForProperty:@"posX" toValue:4.2 duration:2.5];
 //  [newCube2 addAnimationKeyForProperty:@"posX" toValue:1.2 duration:1.5];
@@ -314,56 +399,21 @@
   time.currentTime += self.timeSinceLastUpdate;
   float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
   mainCamera_.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
-  [models_ makeObjectsPerformSelector:@selector(updateForAnimation)];
-//  NSLog(@"Gesture %f %f", _rotation.y, _rotation.x);
+//  [models_ makeObjectsPerformSelector:@selector(updateForAnimation)];
   for (BWModelObject *mocel in models_) {
     if (mocel != heroModel_ && ![heroModel_.children containsObject:mocel]) {
-      mocel.rotZ += 3;
-      mocel.rotY -= 5;
-      mocel.rotX += 3;
+      mocel.rotation = GLKVector3AddScalar(mocel.rotation, 3);
     }
   }
-  heroModel_.rotY -= (_rotation.x * 2);
-  GLKVector3 vector = GLKVector3Make(0, 0, _rotation.y);
-  GLKMatrix4 rotation = GLKMatrix4MakeRotation(GLKMathDegreesToRadians(heroModel_.rotX), 1, 0, 0);
-  rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(heroModel_.rotY), 0, 1, 0);
-  rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(heroModel_.rotZ), 0, 0, 1);
 
-  GLKVector3 transformed_direction = GLKMatrix4MultiplyVector3(rotation, vector);
-  heroModel_.posZ += transformed_direction.z;
-  heroModel_.posY += transformed_direction.y;
-  heroModel_.posX += transformed_direction.x;
-  
+  [graphTree_ commitTransforms];
 
-    if (fabs(_rotation.x) < 0.3 && (_rotation.y < 0)) {
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setHidden:NO];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setScaleZ:(1 + _rotation.y * -1)];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setDiffuseColor:GLKVector4Make((0.75 + _rotation.y * -0.75), (0.5 + _rotation.y * -0.25), fabsf(_rotation.y) - 0.5, fabsf(_rotation.y))];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setHidden:NO];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setDiffuseColor:GLKVector4Make((0.75 + _rotation.y * -0.75), (0.5 + _rotation.y * -0.25), fabsf(_rotation.y) - 0.5, fabsf(_rotation.y))];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setScaleZ:(1 + _rotation.y * -1)];
-    } else if (_rotation.x < 0) {
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setHidden:YES];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setScaleZ:1];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setHidden:NO];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setScaleZ:(1 + fabs(_rotation.x))];
-    } else if (_rotation.x > 0) {
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setHidden:NO];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setScaleZ:(1 + fabs(_rotation.x))];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setHidden:YES];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setScaleZ:1];
-    } else {
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setHidden:YES];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:1] setScaleZ:1];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setHidden:YES];
-      [(BWModelObject *)[heroModel_.children objectAtIndex:2] setScaleZ:1];
-    }
   _textTrans += self.timeSinceLastUpdate *0.2f;
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-  glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
+  glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (BWModelObject *model in models_) {
@@ -382,47 +432,70 @@
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArrayOES(0);
   }
+  if (debugMode_) {
+    BWShaderObject *debugShader = [shaders_ objectAtIndex:1];
+    BWMesh *normalMesh = [debugGeometry_ objectAtIndex:0];
+//    Draw normals TO DO Draw actual normals. Shhhhhhh. Dont Tell
+    glBindVertexArrayOES(normalMesh.vertexArray);
+    glUseProgram(debugShader.shaderProgram);
+    for (BWModelObject *model in models_) {
+      glUniformMatrix4fv(debugShader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, model.currentTransform).m);
+      glUniformMatrix4fv(debugShader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
+      glDrawArrays(GL_LINES, 0, normalMesh.vertexCount);
+    }
+    glBindVertexArrayOES(0);
+    
+//    Draw X grid lines
+    BWMesh *gridMesh = [debugGeometry_ objectAtIndex:1];
+    glBindVertexArrayOES(gridMesh.vertexArray);
+    glUseProgram(debugShader.shaderProgram);
+    glUniformMatrix4fv(debugShader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, GLKMatrix4Identity).m);
+    glUniformMatrix4fv(debugShader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
+    glDrawArrays(GL_LINES, 0, gridMesh.vertexCount);
+    glBindVertexArrayOES(0);
+  }
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
 
-- (BOOL)loadShaders
-{
+- (BOOL)loadShaderNamed:(NSString *)name withVertexAttributes:(NSDictionary *)attributes andUniforms:(NSDictionary *)uniforms {
     GLuint vertShader, fragShader;
     NSString *vertShaderPathname, *fragShaderPathname;
-    currentShader_ = [[BWShaderObject alloc] init];
+  
+    BWShaderObject *newShader = [[BWShaderObject alloc] init];
     // Create shader program.
-    currentShader_.shaderProgram = glCreateProgram();
+    newShader.shaderProgram = glCreateProgram();
     
     // Create and compile vertex shader.
-    vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
+    vertShaderPathname = [[NSBundle mainBundle] pathForResource:name ofType:@"vsh"];
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
         NSLog(@"Failed to compile vertex shader");
         return NO;
     }
   
     // Create and compile fragment shader.
-    fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
+    fragShaderPathname = [[NSBundle mainBundle] pathForResource:name ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
         NSLog(@"Failed to compile fragment shader");
         return NO;
     }
     
     // Attach vertex shader to program.
-    glAttachShader(currentShader_.shaderProgram, vertShader);
+    glAttachShader(newShader.shaderProgram, vertShader);
     
     // Attach fragment shader to program.
-    glAttachShader(currentShader_.shaderProgram, fragShader);
+    glAttachShader(newShader.shaderProgram, fragShader);
     
     // Bind attribute locations.
     // This needs to be done prior to linking.
-    glBindAttribLocation(currentShader_.shaderProgram, GLKVertexAttribPosition, "position");
-    glBindAttribLocation(currentShader_.shaderProgram, GLKVertexAttribNormal, "normal");
-    glBindAttribLocation(currentShader_.shaderProgram, GLKVertexAttribTexCoord0, "texture");
-  
+  for (NSString *attribue in attributes) {
+    glBindAttribLocation(newShader.shaderProgram, [[attributes valueForKey:attribue] integerValue], [attribue UTF8String]);
+  }
+    
+    
     // Link program.
-    if (![self linkProgram:currentShader_.shaderProgram]) {
-        NSLog(@"Failed to link program: %d", currentShader_.shaderProgram);
+    if (![self linkProgram:newShader.shaderProgram]) {
+        NSLog(@"Failed to link program: %d", newShader.shaderProgram);
         
         if (vertShader) {
             glDeleteShader(vertShader);
@@ -432,30 +505,31 @@
             glDeleteShader(fragShader);
             fragShader = 0;
         }
-        if (currentShader_.shaderProgram) {
-            glDeleteProgram(currentShader_.shaderProgram);
-            currentShader_.shaderProgram = 0;
+        if (newShader.shaderProgram) {
+            glDeleteProgram(newShader.shaderProgram);
+            newShader.shaderProgram = 0;
         }
         
         return NO;
     }
     
     // Get uniform locations.
-  currentShader_.uniformModelMatrix = glGetUniformLocation(currentShader_.shaderProgram, "modelViewProjectionMatrix");
-  currentShader_.uniformNormalMatrix = glGetUniformLocation(currentShader_.shaderProgram, "normalMatrix");
-  currentShader_.uniformTextureUV = glGetUniformLocation(currentShader_.shaderProgram, "textureOffset");
-  currentShader_.uniformCameraMatrix = glGetUniformLocation(currentShader_.shaderProgram, "cameraMatrix");
-  currentShader_.uniformDiffuse = glGetUniformLocation(currentShader_.shaderProgram, "diffuseColor");
-  // Release vertex and fragment shaders.
+  
+  for (NSString *uniformKey in uniforms.allKeys) {
+    int uniform = glGetUniformLocation(newShader.shaderProgram, [uniformKey UTF8String]);
+    [newShader setValue:@(uniform) forKey:[uniforms objectForKey:uniformKey]];
+  }
+  
     if (vertShader) {
-        glDetachShader(currentShader_.shaderProgram, vertShader);
+        glDetachShader(newShader.shaderProgram, vertShader);
         glDeleteShader(vertShader);
     }
     if (fragShader) {
-        glDetachShader(currentShader_.shaderProgram, fragShader);
+        glDetachShader(newShader.shaderProgram, fragShader);
         glDeleteShader(fragShader);
     }
-    
+  [shaders_ addObject:newShader];
+  [newShader release];
     return YES;
 }
 
@@ -484,7 +558,7 @@
         free(log);
     }
 #endif
-    
+  
     glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
     if (status == 0) {
         glDeleteShader(*shader);
