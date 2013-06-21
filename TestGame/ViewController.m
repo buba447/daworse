@@ -77,25 +77,22 @@ GLfloat gridLine [264] = {
 
 
 @interface ViewController () {
-  BOOL anaglyph_;
   BOOL debugMode_;
-  CGPoint _rotation;
-  float _rotationDistance;
-  float _textTrans;
-  float _pinchScale;
   NSMutableArray *debugGeometry_;
   BWCameraObject *mainCamera_;
-  NSMutableArray *shaders_;
-  NSMutableArray *meshes_;
   NSMutableArray *models_;
-  NSDictionary *textures_;
+  NSMutableDictionary *textures_;
+  NSMutableDictionary *shaders_;
+  NSMutableDictionary *meshes_;
+  BWGraphObject *heroParent_;
   BWModelObject *heroModel_;
   BWGraphObject *graphTree_;
-  BWForce *attractor_;
+  
+  float shipRotation_;
+  float shipVelocity_;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
-
 - (void)setupGL;
 - (void)tearDownGL;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
@@ -105,19 +102,49 @@ GLfloat gridLine [264] = {
 
 @implementation ViewController
 
-- (void)viewDidLoad
-{
+- (void)dealloc {
+  [self tearDownGL];
+  if ([EAGLContext currentContext] == self.context) {
+    [EAGLContext setCurrentContext:nil];
+  }
+  [heroParent_ release];
+  [debugGeometry_ release];
+  [mainCamera_ release];
+  [models_ release];
+  [textures_ release];
+  [shaders_ release];
+  [meshes_ release];
+  [heroModel_ release];
+  [graphTree_ release];
+  [super dealloc];
+}
+
+- (void)didReceiveMemoryWarning {
+  [super didReceiveMemoryWarning];
+  if ([self isViewLoaded] && ([[self view] window] == nil)) {
+    self.view = nil;
+    [self tearDownGL];
+    if ([EAGLContext currentContext] == self.context) {
+      [EAGLContext setCurrentContext:nil];
+    }
+    self.context = nil;
+  }
+}
+
+- (void)viewDidLoad {
   [super viewDidLoad];
-//  self.preferredFramesPerSecond = 60;
-  anaglyph_ = NO;
   debugMode_ = YES;
-  _rotation = CGPointZero;
-  _rotationDistance = 0;
-  _pinchScale = 0;
-  shaders_ = [[NSMutableArray alloc] init];
+  BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
+  time.currentTime = 0;
+  shaders_ = [[NSMutableDictionary alloc] init];
   debugGeometry_ = [[NSMutableArray alloc] init];
-  meshes_ = [[NSMutableArray alloc] init];
+  meshes_ = [[NSMutableDictionary alloc] init];
   textures_ = [[NSMutableDictionary alloc] init];
+  graphTree_ = [[BWGraphObject alloc] init];
+  models_ = [[NSMutableArray alloc] init];
+  mainCamera_ = [[BWCameraObject alloc] init];
+  [graphTree_ addChild:mainCamera_];
+  
   self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
   if (!self.context) {
@@ -127,78 +154,172 @@ GLfloat gridLine [264] = {
   GLKView *view = (GLKView *)self.view;
   view.context = self.context;
   view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-  UIPanGestureRecognizer *peterPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-  [self.view addGestureRecognizer:peterPan];
-  UIPinchGestureRecognizer *peterPinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
-  [self.view addGestureRecognizer:peterPinch];
   [self setupGL];
   
-  graphTree_ = [[BWGraphObject alloc] init];
-  models_ = [[NSMutableArray alloc] init];
-  mainCamera_ = [[BWCameraObject alloc] init];
-  mainCamera_.rotation = GLKVector3Make(-45, 0, 0);
-  
   UIButton *newButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-  [newButton addTarget:self action:@selector(addCube) forControlEvents:UIControlEventTouchUpInside];
+  [newButton addTarget:self action:@selector(switchDebugMode) forControlEvents:UIControlEventTouchUpInside];
   newButton.frame = CGRectMake(0, 0, 100, 44);
   [self.view addSubview:newButton];
+   
+  [self setupWorld];
+  
+  
+  UILongPressGestureRecognizer *press = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePress:)];
+  press.minimumPressDuration = 0;
+  [self.view addGestureRecognizer:press];
+  [press release];
+
+}
+
+- (void)logTransform:(GLKMatrix4)transform {
+  NSLog(@"\r\rMatrix:\r      X         Y         Z         W        \r XVec %f, %f, %f, %f \r YVec %f, %f, %f, %f \r ZVec %f, %f, %f, %f \r PVec %f, %f, %f, %f \r\r",
+        transform.m00, transform.m01, transform.m02, transform.m03,
+        transform.m10, transform.m11, transform.m12, transform.m13,
+        transform.m20, transform.m21, transform.m22, transform.m23,
+        transform.m30, transform.m31, transform.m32, transform.m33);
+}
+
+- (void)switchDebugMode {
+  debugMode_ = !debugMode_;
+}
+
+- (void)handlePress:(UILongPressGestureRecognizer *)press {
+  CGPoint location = [press locationInView:self.view];
+  GLKVector2 loc = GLKVector2Make(location.x, location.y);
+  GLKVector2 origin = GLKVector2Make(self.view.bounds.size.width / 2, self.view.bounds.size.height * 0.75);
+  shipVelocity_ = GLKVector2Distance(loc, origin) / 280;
+  
+  origin = GLKVector2Subtract(loc, origin);
+  origin = GLKVector2Normalize(origin);
+  GLKVector2 normal = GLKVector2Make(1, 0);
+  float angle = GLKVector2DotProduct(normal, origin);
+  NSLog(@"Length %f Angle %f", shipVelocity_, angle);
+  shipRotation_ = angle * 2;
+  if (press.state == UIGestureRecognizerStateEnded) {
+    shipVelocity_ = 0;
+    shipRotation_ = 0;
+  }
+}
+
+- (void)setupWorld {
+  
+  [self loadMeshAtFile:@"fixedHornet"];
+  [self loadMeshAtFile:@"testExport2"];
+  
+  heroParent_ = [[BWGraphObject alloc] init];
+  heroParent_.translation = GLKVector3Make(0, 0, 0);
+  heroParent_.rotation = GLKVector3Make(0, 45, 0);
+  [graphTree_ addChild:heroParent_];
+  
   heroModel_ = [[BWModelObject alloc] init];
-  heroModel_.mesh = [meshes_ objectAtIndex:0];
-  heroModel_.shader = [shaders_ objectAtIndex:0];
-  heroModel_.translation = GLKVector3Make(5, 0, -5);
-  heroModel_.rotation = GLKVector3Make(0, 45, 0);
-//  heroModel_.texture = [[textures_ valueForKey:@"test.png"] intValue];
+  heroModel_.mesh = [meshes_ objectForKey:@"fixedHornet"];
+  heroModel_.shader = [shaders_ objectForKey:@"Shader"];
+  heroModel_.texture = [[textures_ valueForKey:@"test.png"] intValue];
   heroModel_.diffuseColor = GLKVector4Make(0.3, 0.45, 0.6, 1);
   heroModel_.uvOffset = CGPointZero;
-  [heroModel_ addChild:mainCamera_];
-  mainCamera_.translation = GLKVector3Make(0, 15, 15);
-//  mainCamera_.lookAtPoint = GLKVector3Make(0, 0, 0);
-  [graphTree_ addChild:heroModel_];
-  [models_ addObject:heroModel_];
-  [graphTree_ commitTransforms];
-  attractor_ = [[BWForce alloc] init];
   
-  [self setupWorld];
+  [heroParent_ addChild:heroModel_];
+  [heroParent_ addChild:mainCamera_];
+  mainCamera_.rotation = GLKVector3Make(-25, 180, 0);
+  mainCamera_.translation = GLKVector3Make(0, 8, -11);
+  
+  [models_ addObject:heroModel_];
+
+  for (int i = 0; i < 200; i ++) {
+    BWModelObject *newModel = [[BWModelObject alloc] init];
+    newModel.mesh = [meshes_ objectForKey:@"testExport2"];
+    newModel.shader = [shaders_ objectForKey:@"Shader"];
+    newModel.diffuseColor = GLKVector4Make(0.5, 0.4, 0.3, 1);
+    newModel.uvOffset = CGPointZero;
+    newModel.translation = GLKVector3Make(floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40,
+                                          0,
+                                          floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40);
+    newModel.rotation = GLKVector3Make(floorf(((double)arc4random() / ARC4RANDOM_MAX) * 360.0f) - 180,
+                                          0,
+                                          floorf(((double)arc4random() / ARC4RANDOM_MAX) * 360.0f) - 180);
+    [models_ addObject:newModel];
+    [graphTree_ addChild:newModel];
+  }
+  [graphTree_ commitTransforms];
+}
+
+#pragma mark - GLKView and GLKViewController delegate methods
+
+- (void)update {
   BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
-  time.currentTime = 0;
-}
+  time.currentTime += self.timeSinceLastUpdate;
+  float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+  mainCamera_.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
 
-
-
-- (void)dealloc
-{    
-    [self tearDownGL];
-    if ([EAGLContext currentContext] == self.context) {
-        [EAGLContext setCurrentContext:nil];
+  for (BWModelObject *mocel in models_) {
+    if (mocel != heroModel_ && ![heroModel_.children containsObject:mocel]) {
+      [mocel moveAlongLocalNormal:GLKVector3Make((-cos(time.currentTime) * 0.01), (cos(time.currentTime + [models_ indexOfObject:mocel]) * 0.01), 0)];
+      mocel.rotation = GLKVector3Add(mocel.rotation, GLKVector3Make(1, 1, 2));
     }
-[super dealloc];
+  }
+  heroParent_.rotation =  GLKVector3Add(heroParent_.rotation, GLKVector3Make(0, shipRotation_, 0));
+  [heroParent_ moveAlongLocalNormal:GLKVector3Make(0, 0, shipVelocity_)];
+  heroModel_.rotation = GLKVector3Add(heroModel_.rotation, GLKVector3Make(-(cos(time.currentTime * 2 ) * 0.3), 0, -(cos(time.currentTime * 2) * 0.1)));
+  
+  [heroModel_ moveAlongLocalNormal:GLKVector3Make(0, (cos(time.currentTime * 2) * 0.01), 0)];
+  [graphTree_ commitTransforms];
+
 }
 
-- (void)didReceiveMemoryWarning
+
+
+- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    [super didReceiveMemoryWarning];
+  glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if ([self isViewLoaded] && ([[self view] window] == nil)) {
-        self.view = nil;
-        
-        [self tearDownGL];
-        
-        if ([EAGLContext currentContext] == self.context) {
-            [EAGLContext setCurrentContext:nil];
-        }
-        self.context = nil;
+  for (BWModelObject *model in models_) {
+    if (model.hidden) {
+      continue;
     }
-
-    // Dispose of any resources that can be recreated.
+    glBindVertexArrayOES(model.mesh.vertexArray);
+    glUseProgram(model.shader.shaderProgram);
+    glBindTexture(GL_TEXTURE_2D, model.texture);
+    glUniformMatrix4fv(model.shader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, model.worldTransform).m);
+    glUniformMatrix3fv(model.shader.uniformNormalMatrix, 1, 0, model.normalMatrix.m);
+    glUniformMatrix4fv(model.shader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
+    glUniform2f(model.shader.uniformTextureUV, model.uvOffset.x, model.uvOffset.y);
+    glUniform4f(model.shader.uniformDiffuse, model.diffuseColor.x, model.diffuseColor.y, model.diffuseColor.z, model.diffuseColor.w);
+    glDrawArrays(GL_TRIANGLES, 0, model.mesh.vertexCount);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArrayOES(0);
+  }
+  if (debugMode_) {
+    BWShaderObject *debugShader = [shaders_ objectForKey:@"LineShader"];
+    BWMesh *normalMesh = [debugGeometry_ objectAtIndex:0];
+//    Draw normals TO DO Draw actual normals. Shhhhhhh. Dont Tell
+    glBindVertexArrayOES(normalMesh.vertexArray);
+    glUseProgram(debugShader.shaderProgram);
+    for (BWModelObject *model in models_) {
+      glUniformMatrix4fv(debugShader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, model.worldTransform).m);
+      glUniformMatrix4fv(debugShader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
+      glDrawArrays(GL_LINES, 0, normalMesh.vertexCount);
+    }
+    glBindVertexArrayOES(0);
+    
+//    Draw X grid lines
+    BWMesh *gridMesh = [debugGeometry_ objectAtIndex:1];
+    glBindVertexArrayOES(gridMesh.vertexArray);
+    glUseProgram(debugShader.shaderProgram);
+    glUniformMatrix4fv(debugShader.uniformModelMatrix, 1, 0, mainCamera_.currentTransform.m);
+    glUniformMatrix4fv(debugShader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
+    glDrawArrays(GL_LINES, 0, gridMesh.vertexCount);
+    glBindVertexArrayOES(0);
+  }
 }
+
+#pragma mark - load up Open GL methods
 
 - (GLuint)loadTextureNamed:(NSString *)file {
   if ([textures_ objectForKey:file]) {
     return [[textures_ objectForKey:file] integerValue];
   }
-  
   CGImageRef image = [UIImage imageNamed:file].CGImage;
-  
   GLuint returnTexture;
   GLuint width = CGImageGetWidth(image);
   GLuint height = CGImageGetHeight(image);
@@ -221,7 +342,7 @@ GLfloat gridLine [264] = {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
                0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
+  
   free(imageData);
   CGContextRelease(imgcontext);
   
@@ -231,7 +352,6 @@ GLfloat gridLine [264] = {
 }
 
 - (void)loadMeshAtFile:(NSString *)file {
-  
   NSString* path = [[NSBundle mainBundle] pathForResource:file
                                                    ofType:@"mdl"];
   NSData* fileData = [NSData dataWithContentsOfFile:path];
@@ -243,9 +363,9 @@ GLfloat gridLine [264] = {
     floatArray[i] = (float) vertexBuffer[i];
   }
   
-//  To Do!
-//  Add dynamic header to file export.
-//  Number of components, lenght, ect.
+  //  To Do!
+  //  Add dynamic header to file export.
+  //  Number of components, lenght, ect.
   
   GLuint newVertexArray;
   GLuint newVertexBuffer;
@@ -271,13 +391,14 @@ GLfloat gridLine [264] = {
   newMesh.vertexArray = newVertexArray;
   newMesh.vertexBuffer = newVertexBuffer;
   newMesh.vertexCount = arrayCount / 9;
-  [meshes_ addObject:newMesh];
+  [meshes_ setObject:newMesh forKey:file];
   [newMesh release];
 }
 
 - (void)setupGL {
   [EAGLContext setCurrentContext:self.context];
-
+  
+  //Load Up Shaders. This is clunky, but hopefully will change.
   NSDictionary *uniforms = @{@"modelViewProjectionMatrix": @"uniformModelMatrix",
                              @"normalMatrix" : @"uniformNormalMatrix",
                              @"textureOffset" : @"uniformTextureUV",
@@ -287,14 +408,13 @@ GLfloat gridLine [264] = {
   NSDictionary *attributes = @{@"position": @(GLKVertexAttribPosition),
                                @"normal" : @(GLKVertexAttribNormal),
                                @"texture" : @(GLKVertexAttribTexCoord0)};
-
+  
   [self loadShaderNamed:@"Shader" withVertexAttributes:attributes andUniforms:uniforms];
-
+  
   [self loadShaderNamed:@"LineShader" withVertexAttributes:@{@"position" : @(GLKVertexAttribPosition), @"color" : @(GLKVertexAttribColor)} andUniforms:@{@"modelViewProjectionMatrix": @"uniformModelMatrix", @"cameraMatrix" : @"uniformCameraMatrix"}];
+  
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_TEXTURE_2D);
-  [self loadMeshAtFile:@"fixedHornet"];
-  [self loadMeshAtFile:@"testExport2"];
   
   [self loadDebugMesh:normalVertices withSize:sizeof(normalVertices)];
   [self loadDebugMesh:gridLine withSize:sizeof(gridLine)];
@@ -304,11 +424,11 @@ GLfloat gridLine [264] = {
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glShadeModel (GL_SMOOTH);
   [self loadTextureNamed:@"test.png"];
-
+  
 }
 
 - (void)loadDebugMesh:(GLfloat[])mesh withSize:(size_t)size {
-//  return;
+  //  return;
   GLuint newVertexArray;
   GLuint newVertexBuffer;
   
@@ -336,159 +456,19 @@ GLfloat gridLine [264] = {
 - (void)tearDownGL
 {
   [EAGLContext setCurrentContext:self.context];
-  for (BWMesh *mesh in meshes_) {
+  for (NSString *key in meshes_) {
+    BWMesh *mesh = [meshes_ objectForKey:key];
     GLuint vertexBuffer = mesh.vertexBuffer;
     GLuint vertexArray = mesh.vertexArray;
     glDeleteBuffers(1, &vertexBuffer);
     glDeleteVertexArraysOES(1, &vertexArray);
-    [meshes_ removeObject:mesh];
+    [meshes_ removeObjectForKey:key];
   }
-  for (BWShaderObject *shader in shaders_) {
+  for (BWShaderObject *shader in shaders_.allValues) {
     if (shader.shaderProgram) {
       glDeleteProgram(shader.shaderProgram);
       shader.shaderProgram = 0;
     }
-  }
-}
-
-- (void)setupWorld {
-  return;
-  for (int i = 0; i < 200; i ++) {
-    BWModelObject *newModel = [[BWModelObject alloc] init];
-//    newMod el.vertexArray = _vertexArray;
-    newModel.mesh = [meshes_ objectAtIndex:1];
-    newModel.shader = [shaders_ objectAtIndex:0];
-    newModel.diffuseColor = GLKVector4Make(0.5, 0.4, 0.3, 1);
-    newModel.uvOffset = CGPointZero;
-    newModel.translation = GLKVector3Make(floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40,
-                                          0,
-                                          floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40);
-//    newModel.rotation = GLKVector3Make(-90, 45, 0);
-    [attractor_ addChild:newModel];
-    [models_ addObject:newModel];
-    [graphTree_ addChild:newModel];
-  }
-  [graphTree_ commitTransforms];
-}
-
-- (void)addCube {
-  attractor_.magnitude = 5;
-//  BWModelObject *newCube = [models_ objectAtIndex:0];
-//  [newCube removeAllAnimationKeys];
-//  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
-//  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
-//  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
-  //  [newCube addAnimationKeyForProperty:@"posY" toValue:6 duration:2];
-  //  [newCube addAnimationKeyForProperty:@"posY" toValue:-6 duration:2];
-  //  [newCube addAnimationKeyForProperty:@"posY" toValue:0 duration:1];
-  //  [newCube addAnimationKeyForProperty:@"rotX" toValue:180 duration:2 delay:1];
-  //  [newCube addAnimationKeyForProperty:@"rotX" toValue:0 duration:2];
-//  [newCube addAnimationKeyForProperty:@"rotZ" toValue:90 duration:0.3 delay:0];
-//  [newCube addAnimationKeyForProperty:@"rotZ" toValue:0 duration:2 delay:1];
-//  BWModelObject *newCube2 = [models_ objectAtIndex:1];
-//  [newCube2 addAnimationKeyForProperty:@"posX" toValue:4.2 duration:2.5];
-//  [newCube2 addAnimationKeyForProperty:@"posX" toValue:1.2 duration:1.5];
-}
-
-- (void)handlePinch:(UIPinchGestureRecognizer *)pinch {
-  _pinchScale = -(1 - pinch.scale);
-  if (pinch.state == UIGestureRecognizerStateEnded ||
-      pinch.state == UIGestureRecognizerStateCancelled) {
-    _pinchScale = 0;
-  }
-}
-
-- (void)handlePan:(UIPanGestureRecognizer *)gesture {
-  CGPoint translation = [gesture translationInView:self.view];
-  _rotation.y = translation.y / self.view.bounds.size.height;
-  _rotation.x = translation.x / self.view.bounds.size.width;
-  _rotationDistance = sqrtf(pow(translation.x, 2) + pow(translation.y, 2)) / 100;
-  if (gesture.state == UIGestureRecognizerStateEnded ||
-      gesture.state == UIGestureRecognizerStateCancelled) {
-    _rotation = CGPointZero;
-  }
-}
-
-#pragma mark - GLKView and GLKViewController delegate methods
-
-- (void)update
-{
-  BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
-  time.currentTime += self.timeSinceLastUpdate;
-  float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-  mainCamera_.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
-//  [mainCamera_  moveAlongLocalNormal:GLKVector3Make(_rotation.x, _rotation.y, _pinchScale)];
-  //  [models_ makeObjectsPerformSelector:@selector(updateForAnimation)];
-//  for (BWModelObject *mocel in models_) {
-//    if (mocel != heroModel_ && ![heroModel_.children containsObject:mocel]) {
-//      GLKVector3 movementVector = mocel.facingVector;
-//      movementVector = GLKVector3MultiplyScalar(mocel.facingVector, 0.1);
-//      mocel.translation = GLKVector3Add(mocel.translation, movementVector);
-//      mocel.rotation = GLKVector3Add(mocel.rotation, GLKVector3Make(0, 1, 5));
-//    }
-//  }
-  //initial transforms complete now forces
-//  heroModel_.translation = GLKVector3Make(3, 0, 3);
-  heroModel_.rotation = GLKVector3Add(heroModel_.rotation, GLKVector3Make((cos(_textTrans * 10)), -.5, 0));
-//  [self logTransform:heroModel_.localTransform];
-  [heroModel_ moveAlongLocalNormal:GLKVector3Make(0, (cos(_textTrans * 10) * 0.01), .05)];
-  [graphTree_ commitTransforms];
-//  mainCamera_.lookAtPoint = heroModel_.worldTranslation;
-  [attractor_ stepForce:self.timeSinceLastUpdate];
-  
-  _textTrans += self.timeSinceLastUpdate *0.2f;
-}
-
-- (void)logTransform:(GLKMatrix4)transform {
-  NSLog(@"\r\rMatrix:\r      X         Y         Z         W        \r XVec %f, %f, %f, %f \r YVec %f, %f, %f, %f \r ZVec %f, %f, %f, %f \r PVec %f, %f, %f, %f \r\r",
-        transform.m00, transform.m01, transform.m02, transform.m03,
-        transform.m10, transform.m11, transform.m12, transform.m13,
-        transform.m20, transform.m21, transform.m22, transform.m23,
-        transform.m30, transform.m31, transform.m32, transform.m33);
-}
-
-- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
-{
-  glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  for (BWModelObject *model in models_) {
-    if (model.hidden) {
-      continue;
-    }
-    glBindVertexArrayOES(model.mesh.vertexArray);
-    glUseProgram(model.shader.shaderProgram);
-    glBindTexture(GL_TEXTURE_2D, model.texture);
-    glUniformMatrix4fv(model.shader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, model.worldTransform).m);
-    glUniformMatrix3fv(model.shader.uniformNormalMatrix, 1, 0, model.normalMatrix.m);
-    glUniformMatrix4fv(model.shader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
-    glUniform2f(model.shader.uniformTextureUV, model.uvOffset.x, model.uvOffset.y);
-    glUniform4f(model.shader.uniformDiffuse, model.diffuseColor.x, model.diffuseColor.y, model.diffuseColor.z, model.diffuseColor.w);
-    glDrawArrays(GL_TRIANGLES, 0, model.mesh.vertexCount);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindVertexArrayOES(0);
-  }
-  if (debugMode_) {
-    BWShaderObject *debugShader = [shaders_ objectAtIndex:1];
-    BWMesh *normalMesh = [debugGeometry_ objectAtIndex:0];
-//    Draw normals TO DO Draw actual normals. Shhhhhhh. Dont Tell
-    glBindVertexArrayOES(normalMesh.vertexArray);
-    glUseProgram(debugShader.shaderProgram);
-    for (BWModelObject *model in models_) {
-      glUniformMatrix4fv(debugShader.uniformModelMatrix, 1, 0, GLKMatrix4Multiply(mainCamera_.currentTransform, model.worldTransform).m);
-      glUniformMatrix4fv(debugShader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
-      glDrawArrays(GL_LINES, 0, normalMesh.vertexCount);
-    }
-    glBindVertexArrayOES(0);
-    
-//    Draw X grid lines
-    BWMesh *gridMesh = [debugGeometry_ objectAtIndex:1];
-    glBindVertexArrayOES(gridMesh.vertexArray);
-    glUseProgram(debugShader.shaderProgram);
-    glUniformMatrix4fv(debugShader.uniformModelMatrix, 1, 0, mainCamera_.currentTransform.m);
-    glUniformMatrix4fv(debugShader.uniformCameraMatrix, 1, 0, mainCamera_.projectionMatrix.m);
-    glDrawArrays(GL_LINES, 0, gridMesh.vertexCount);
-    glBindVertexArrayOES(0);
   }
 }
 
@@ -564,7 +544,7 @@ GLfloat gridLine [264] = {
         glDetachShader(newShader.shaderProgram, fragShader);
         glDeleteShader(fragShader);
     }
-  [shaders_ addObject:newShader];
+  [shaders_ setObject:newShader forKey:name];
   [newShader release];
     return YES;
 }
