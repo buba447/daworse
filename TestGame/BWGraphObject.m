@@ -11,9 +11,8 @@
 
 @implementation BWGraphObject {
   NSMutableDictionary *keyframeTracks_;
-  GLKVector3 previousLocation_;
-  GLKVector3 previousRotation_;
-  GLKVector3 previousScale_;
+  GLKMatrix4 previousWorldMatrix_;
+  GLKMatrix4 previousLocalMatrix_;
 }
 
 - (void)dealloc {
@@ -30,45 +29,69 @@
     _translation = GLKVector3Make(0, 0, 0);
     _rotation = GLKVector3Make(0, 0, 0);
     _scale = GLKVector3Make(1, 1, 1);
-    previousScale_ = _scale;
-    previousRotation_ = _rotation;
-    previousLocation_ = _translation;
-    _facingVector = GLKVector3Make(0, 0, 1);
-    _transformIdentity = GLKMatrix4Identity;
-    _currentTransform = GLKMatrix4Identity;
+    _localTransform = GLKMatrix4Identity;
+    _worldTransform = GLKMatrix4Identity;
+    _movementVector = GLKVector3Make(0, 0, 0);
+    previousLocalMatrix_ = GLKMatrix4Identity;
+    previousWorldMatrix_ = GLKMatrix4Identity;
   }
   return self;
 }
 
-- (GLKMatrix4)currentTransform {
-  return _currentTransform;
+- (GLKVector3)worldTranslation {
+  GLKMatrix4 worldXform = self.worldTransform;
+  return GLKVector3Make(worldXform.m30, worldXform.m31, worldXform.m32);
 }
 
-- (BOOL)hasMovedSinceLastFrame {
-  return (!GLKVector3AllEqualToVector3(_translation, previousLocation_) ||
-          !GLKVector3AllEqualToVector3(_rotation, previousRotation_) ||
-          !GLKVector3AllEqualToVector3(_scale, previousScale_));
-  
+- (void)moveAlongLocalNormal:(GLKVector3)direction {
+  GLKMatrix4 rotation = [self rotationMatrix];
+  GLKVector3 xMovement = GLKVector3MultiplyScalar(GLKVector3Make(rotation.m00, rotation.m01, rotation.m02), direction.x);
+  GLKVector3 yMovement = GLKVector3MultiplyScalar(GLKVector3Make(rotation.m10, rotation.m11, rotation.m12), direction.y);
+  GLKVector3 zMovement = GLKVector3MultiplyScalar(GLKVector3Make(rotation.m20, rotation.m21, rotation.m22), direction.z);
+  _translation = GLKVector3Add(_translation, xMovement);
+  _translation = GLKVector3Add(_translation, yMovement);
+  _translation = GLKVector3Add(_translation, zMovement);
+}
+
+- (GLKMatrix4)rotationMatrix {
+  GLKMatrix4 rotation = GLKMatrix4MakeRotation(GLKMathDegreesToRadians(_rotation.x), 1, 0, 0);
+  rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(_rotation.y), 0, 1, 0);
+  rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(_rotation.z), 0, 0, 1);
+  return rotation;
+}
+
+- (GLKMatrix4)currentLocalTransform {
+  GLKMatrix4 scale = GLKMatrix4ScaleWithVector3([self rotationMatrix], _scale);
+  GLKMatrix4 xform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, _translation),
+                                        scale);
+  return xform;
+}
+
+- (GLKMatrix4)currentTransform {
+  if (_parentObject)
+    return GLKMatrix4Multiply(_parentObject.currentTransform, self.currentLocalTransform);
+  return self.currentLocalTransform;
 }
 
 - (void)commitTransforms {
-  if (self.hasMovedSinceLastFrame) {
-    GLKMatrix4 rotation = GLKMatrix4MakeRotation(GLKMathDegreesToRadians(_rotation.x), 1, 0, 0);
-    rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(_rotation.y), 0, 1, 0);
-    rotation = GLKMatrix4Rotate(rotation, GLKMathDegreesToRadians(_rotation.z), 0, 0, 1);
-    rotation = GLKMatrix4ScaleWithVector3(rotation, _scale);
-    GLKMatrix4 xform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector3(_transformIdentity, _translation),
-                                          rotation);
-    if (_parentObject)
-      _currentTransform = GLKMatrix4Multiply(_parentObject.currentTransform, xform);
-    else
-      _currentTransform = xform;
-  }
-  previousScale_ = _scale;
-  previousRotation_ = _rotation;
-  previousLocation_ = _translation;
+  previousWorldMatrix_ = _worldTransform;
+  previousLocalMatrix_ = _localTransform;
+  
+  _localTransform = [self currentLocalTransform];
+  if (_parentObject)
+    _worldTransform = GLKMatrix4Multiply(_parentObject.worldTransform, _localTransform);
+  else
+    _worldTransform = _localTransform;
+  
+  GLKVector4 currentLocation = GLKMatrix4GetRow(_worldTransform, 3);
+  GLKVector4 previousLocation = GLKMatrix4GetRow(previousWorldMatrix_, 3);
+  GLKVector4 movementVector = GLKVector4Subtract(currentLocation, previousLocation);
+  _movementVector = GLKVector3Make(movementVector.x, movementVector.y, movementVector.z);
+  
   [self.children makeObjectsPerformSelector:@selector(commitTransforms)];
 }
+
+#pragma mark - Children Methods
 
 - (void)removeChild:(BWGraphObject *)child {
   child.parentObject = nil;
@@ -90,6 +113,8 @@
     _children = [@[child] retain];
   }
 }
+
+#pragma mark - Animation Methods
 
 - (void)updateForAnimation {
   [keyframeTracks_.allValues makeObjectsPerformSelector:@selector(updatePropertyForKeyframe)];

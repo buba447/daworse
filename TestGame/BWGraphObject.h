@@ -9,29 +9,37 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
-@interface BWGraphObject : NSObject
-@property (nonatomic, readonly) GLKVector3 facingVector;
-@property (nonatomic, readonly) GLKVector3 movementVector;
-@property (nonatomic, readonly) GLKVector3 worldTranslation;
 
+@interface BWGraphObject : NSObject
+
+@property (nonatomic, readonly) GLKVector3 movementVector;
+
+@property (nonatomic, assign) GLKVector3 worldTranslation;
 @property (nonatomic, assign) GLKVector3 translation;
+
 @property (nonatomic, assign) GLKVector3 rotation;
 @property (nonatomic, assign) GLKVector3 scale;
 
-@property (nonatomic, assign) GLKMatrix4 transformIdentity;
-@property (nonatomic, assign) GLKMatrix4 currentTransform;
+@property (nonatomic, assign) GLKMatrix4 worldTransform;
+@property (nonatomic, assign) GLKMatrix4 localTransform;
+
+@property (nonatomic, readonly) GLKMatrix4 currentTransform;
+@property (nonatomic, readonly) GLKMatrix4 currentLocalTransform;
 
 @property (nonatomic, assign) BWGraphObject *parentObject;
 @property (nonatomic, retain) NSArray *children;
 
 @property (nonatomic, readonly) BOOL hasMovedSinceLastFrame;
 
+- (void)moveAlongLocalNormal:(GLKVector3)direction;
+
 - (void)commitTransforms;
+
+- (GLKMatrix4)rotationMatrix;
 
 - (void)removeChild:(BWGraphObject *)child;
 - (void)addChild:(BWGraphObject *)child;
 
-- (void)updateForAnimation;
 - (void)addAnimationKeyForProperty:(NSString *)property
                            toValue:(float)value
                           duration:(float)duration;

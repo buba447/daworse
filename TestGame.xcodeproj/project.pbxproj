@@ -10,6 +10,9 @@
 		48254E99176CE6D50021F0EF /* BWKeyframe.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E98176CE6D50021F0EF /* BWKeyframe.m */; };
 		48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */; };
 		48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */; };
+		486DD3BF177277C100526BC4 /* BWLookAtCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 486DD3BE177277C100526BC4 /* BWLookAtCamera.m */; };
+		486DD3C11772800800526BC4 /* newHornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 486DD3C01772800800526BC4 /* newHornet.mdl */; };
+		486DD3C21772800800526BC4 /* newHornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 486DD3C01772800800526BC4 /* newHornet.mdl */; };
 		4877A7B01770017200EB6259 /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = 4877A7AE1770017200EB6259 /* test.png */; };
 		4877A7B11770017200EB6259 /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = 4877A7AE1770017200EB6259 /* test.png */; };
 		4877A7B21770017200EB6259 /* hornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 4877A7AF1770017200EB6259 /* hornet.mdl */; };
@@ -59,6 +62,9 @@
 		48F55ACC176410AA00184298 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9C176410A900184298 /* Foundation.framework */; };
 		48F55AD4176410AA00184298 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 48F55AD2176410AA00184298 /* InfoPlist.strings */; };
 		48F55AD7176410AA00184298 /* TestGameTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 48F55AD6176410AA00184298 /* TestGameTests.m */; };
+		48FE42D41772820C000449F7 /* fixedHornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 48FE42D31772820C000449F7 /* fixedHornet.mdl */; };
+		48FE42D517728221000449F7 /* fixedHornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 48FE42D31772820C000449F7 /* fixedHornet.mdl */; };
+		48FE42DC17728FDC000449F7 /* BWForce.m in Sources */ = {isa = PBXBuildFile; fileRef = 48FE42DB17728FDC000449F7 /* BWForce.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +84,9 @@
 		48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWAnimationTrack.m; sourceTree = "<group>"; };
 		48254EAC176D17FA0021F0EF /* BWWorldTimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWWorldTimeManager.h; sourceTree = "<group>"; };
 		48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWWorldTimeManager.m; sourceTree = "<group>"; };
+		486DD3BD177277C100526BC4 /* BWLookAtCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWLookAtCamera.h; sourceTree = "<group>"; };
+		486DD3BE177277C100526BC4 /* BWLookAtCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWLookAtCamera.m; sourceTree = "<group>"; };
+		486DD3C01772800800526BC4 /* newHornet.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = newHornet.mdl; sourceTree = "<group>"; };
 		4877A7AE1770017200EB6259 /* test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test.png; sourceTree = "<group>"; };
 		4877A7AF1770017200EB6259 /* hornet.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = hornet.mdl; sourceTree = "<group>"; };
 		4877A7B41770AB6E00EB6259 /* hornet2.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = hornet2.mdl; sourceTree = "<group>"; };
@@ -128,6 +137,9 @@
 		48F55AD3176410AA00184298 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		48F55AD5176410AA00184298 /* TestGameTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestGameTests.h; sourceTree = "<group>"; };
 		48F55AD6176410AA00184298 /* TestGameTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestGameTests.m; sourceTree = "<group>"; };
+		48FE42D31772820C000449F7 /* fixedHornet.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = fixedHornet.mdl; sourceTree = "<group>"; };
+		48FE42DA17728FDC000449F7 /* BWForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWForce.h; sourceTree = "<group>"; };
+		48FE42DB17728FDC000449F7 /* BWForce.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWForce.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +181,8 @@
 		4877A7AC176FF66A00EB6259 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				48FE42D31772820C000449F7 /* fixedHornet.mdl */,
+				486DD3C01772800800526BC4 /* newHornet.mdl */,
 				488301D3176F526A0018F184 /* testExport2.mdl */,
 				4877A7B41770AB6E00EB6259 /* hornet2.mdl */,
 				4877A7AF1770017200EB6259 /* hornet.mdl */,
@@ -210,6 +224,8 @@
 				48B029B617695A3A00396E28 /* BWModelObject.m */,
 				48B029B817696A7D00396E28 /* BWCameraObject.h */,
 				48B029B917696A7D00396E28 /* BWCameraObject.m */,
+				486DD3BD177277C100526BC4 /* BWLookAtCamera.h */,
+				486DD3BE177277C100526BC4 /* BWLookAtCamera.m */,
 			);
 			name = SceneGraph;
 			sourceTree = "<group>";
@@ -273,6 +289,7 @@
 				488301C0176E53790018F184 /* BWMesh.m */,
 				48B029B21769543600396E28 /* BWShaderObject.h */,
 				48B029B31769543600396E28 /* BWShaderObject.m */,
+				48FE42D917728FBC000449F7 /* Forces */,
 				48D2882D1771336700B84A29 /* KeyFrame Animation */,
 				48D2882C1771335200B84A29 /* SceneGraph */,
 				48F55AA5176410A900184298 /* Supporting Files */,
@@ -312,6 +329,15 @@
 				48F55AD2176410AA00184298 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		48FE42D917728FBC000449F7 /* Forces */ = {
+			isa = PBXGroup;
+			children = (
+				48FE42DA17728FDC000449F7 /* BWForce.h */,
+				48FE42DB17728FDC000449F7 /* BWForce.m */,
+			);
+			name = Forces;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -385,6 +411,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48FE42D517728221000449F7 /* fixedHornet.mdl in Resources */,
 				48D2883417720F6200B84A29 /* ship.mdl in Resources */,
 				48D2883317720F5C00B84A29 /* LineShader.vsh in Resources */,
 				48D2883217720F5700B84A29 /* LineShader.fsh in Resources */,
@@ -406,6 +433,7 @@
 				4877A7B01770017200EB6259 /* test.png in Resources */,
 				4877A7B21770017200EB6259 /* hornet.mdl in Resources */,
 				4877A7B51770AB6F00EB6259 /* hornet2.mdl in Resources */,
+				486DD3C11772800800526BC4 /* newHornet.mdl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +452,8 @@
 				4877A7B11770017200EB6259 /* test.png in Resources */,
 				4877A7B31770017200EB6259 /* hornet.mdl in Resources */,
 				4877A7B61770AB6F00EB6259 /* hornet2.mdl in Resources */,
+				486DD3C21772800800526BC4 /* newHornet.mdl in Resources */,
+				48FE42D41772820C000449F7 /* fixedHornet.mdl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,6 +491,8 @@
 				48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */,
 				48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */,
 				488301C1176E53790018F184 /* BWMesh.m in Sources */,
+				486DD3BF177277C100526BC4 /* BWLookAtCamera.m in Sources */,
+				48FE42DC17728FDC000449F7 /* BWForce.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

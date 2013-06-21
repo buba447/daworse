@@ -27,7 +27,7 @@
 
 - (void)commitTransforms {
   [super commitTransforms];
-  _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(self.currentTransform), NULL);
+  _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(self.worldTransform), NULL);
 }
 
 @end
