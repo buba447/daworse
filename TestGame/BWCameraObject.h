@@ -10,4 +10,5 @@
 
 @interface BWCameraObject : BWGraphObject
 @property (nonatomic, assign) GLKMatrix4 projectionMatrix;
+@property (nonatomic, assign) GLKMatrix4 invertedWorldTransform;
 @end

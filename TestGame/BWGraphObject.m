@@ -13,6 +13,10 @@
   NSMutableDictionary *keyframeTracks_;
   GLKMatrix4 previousWorldMatrix_;
   GLKMatrix4 previousLocalMatrix_;
+  GLKVector3 normalMovement_;
+  GLKVector3 previousTranslation_;
+  GLKVector3 previousRotation_;
+  GLKVector3 previousScale_;
 }
 
 - (void)dealloc {
@@ -38,19 +42,8 @@
   return self;
 }
 
-- (GLKVector3)worldTranslation {
-  GLKMatrix4 worldXform = self.worldTransform;
-  return GLKVector3Make(worldXform.m30, worldXform.m31, worldXform.m32);
-}
-
 - (void)moveAlongLocalNormal:(GLKVector3)direction {
-  GLKMatrix4 rotation = [self rotationMatrix];
-  GLKVector3 xMovement = GLKVector3MultiplyScalar(GLKVector3Make(rotation.m00, rotation.m01, rotation.m02), direction.x);
-  GLKVector3 yMovement = GLKVector3MultiplyScalar(GLKVector3Make(rotation.m10, rotation.m11, rotation.m12), direction.y);
-  GLKVector3 zMovement = GLKVector3MultiplyScalar(GLKVector3Make(rotation.m20, rotation.m21, rotation.m22), direction.z);
-  _translation = GLKVector3Add(_translation, xMovement);
-  _translation = GLKVector3Add(_translation, yMovement);
-  _translation = GLKVector3Add(_translation, zMovement);
+  normalMovement_ = direction;
 }
 
 - (GLKMatrix4)rotationMatrix {
@@ -62,9 +55,10 @@
 
 - (GLKMatrix4)currentLocalTransform {
   GLKMatrix4 scale = GLKMatrix4ScaleWithVector3([self rotationMatrix], _scale);
-  GLKMatrix4 xform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, _translation),
-                                        scale);
-  return xform;
+  scale.m30 = _translation.x;
+  scale.m31 = _translation.y;
+  scale.m32 = _translation.z;
+  return scale;
 }
 
 - (GLKMatrix4)currentTransform {
@@ -77,12 +71,24 @@
   previousWorldMatrix_ = _worldTransform;
   previousLocalMatrix_ = _localTransform;
   
+  if (normalMovement_.x != 0 || normalMovement_.y != 0 || normalMovement_.z != 0) {
+    GLKVector3 xMovement = GLKVector3MultiplyScalar(GLKVector3Make(previousLocalMatrix_.m00, previousLocalMatrix_.m01, previousLocalMatrix_.m02), normalMovement_.x);
+    GLKVector3 yMovement = GLKVector3MultiplyScalar(GLKVector3Make(previousLocalMatrix_.m10, previousLocalMatrix_.m11, previousLocalMatrix_.m12), normalMovement_.y);
+    GLKVector3 zMovement = GLKVector3MultiplyScalar(GLKVector3Make(previousLocalMatrix_.m20, previousLocalMatrix_.m21, previousLocalMatrix_.m22), normalMovement_.z);
+    _translation = GLKVector3Add(_translation, xMovement);
+    _translation = GLKVector3Add(_translation, yMovement);
+    _translation = GLKVector3Add(_translation, zMovement);
+    normalMovement_ = GLKVector3Make(0, 0, 0);
+  }
+  
   _localTransform = [self currentLocalTransform];
+
   if (_parentObject)
     _worldTransform = GLKMatrix4Multiply(_parentObject.worldTransform, _localTransform);
   else
     _worldTransform = _localTransform;
   
+  _worldTranslation = GLKVector3Make(self.worldTransform.m30, self.worldTransform.m31, self.worldTransform.m32);
   GLKVector4 currentLocation = GLKMatrix4GetRow(_worldTransform, 3);
   GLKVector4 previousLocation = GLKMatrix4GetRow(previousWorldMatrix_, 3);
   GLKVector4 movementVector = GLKVector4Subtract(currentLocation, previousLocation);

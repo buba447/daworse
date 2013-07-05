@@ -13,7 +13,16 @@
 @property (nonatomic, assign) GLuint shaderProgram;
 @property (nonatomic, assign) GLint uniformModelMatrix;
 @property (nonatomic, assign) GLint uniformNormalMatrix;
-@property (nonatomic, assign) GLint uniformCameraMatrix;
+@property (nonatomic, assign) GLint uniformCameraLocationMatrix;
+@property (nonatomic, assign) GLint uniformCameraProjectionMatrix;
 @property (nonatomic, assign) GLint uniformTextureUV;
 @property (nonatomic, assign) GLint uniformDiffuse;
+@property (nonatomic, assign) GLint uniformLight1;
+@property (nonatomic, assign) GLint uniformLight2;
+@property (nonatomic, assign) GLint uniformLight3;
+@property (nonatomic, assign) GLint uniformLight4;
+@property (nonatomic, assign) GLint uniformLight1On;
+@property (nonatomic, assign) GLint uniformLight2On;
+@property (nonatomic, assign) GLint uniformLight3On;
+@property (nonatomic, assign) GLint uniformLight4On;
 @end

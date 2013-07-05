@@ -10,6 +10,8 @@
 		48254E99176CE6D50021F0EF /* BWKeyframe.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E98176CE6D50021F0EF /* BWKeyframe.m */; };
 		48254E9F176CFFEC0021F0EF /* BWAnimationTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */; };
 		48254EAE176D17FB0021F0EF /* BWWorldTimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */; };
+		4837967617793C8200F77AF0 /* thruster.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 4837967517793C8200F77AF0 /* thruster.mdl */; };
+		4837967717793C8200F77AF0 /* thruster.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 4837967517793C8200F77AF0 /* thruster.mdl */; };
 		486DD3BF177277C100526BC4 /* BWLookAtCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 486DD3BE177277C100526BC4 /* BWLookAtCamera.m */; };
 		486DD3C11772800800526BC4 /* newHornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 486DD3C01772800800526BC4 /* newHornet.mdl */; };
 		486DD3C21772800800526BC4 /* newHornet.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 486DD3C01772800800526BC4 /* newHornet.mdl */; };
@@ -41,6 +43,9 @@
 		48D2883217720F5700B84A29 /* LineShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 48D2882E1772028E00B84A29 /* LineShader.fsh */; };
 		48D2883317720F5C00B84A29 /* LineShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 48D288301772029D00B84A29 /* LineShader.vsh */; };
 		48D2883417720F6200B84A29 /* ship.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 488301DD176F5ACA0018F184 /* ship.mdl */; };
+		48D33F66177DE5810013AAF4 /* BWSpotLight.m in Sources */ = {isa = PBXBuildFile; fileRef = 48D33F65177DE5810013AAF4 /* BWSpotLight.m */; };
+		48D33F71177F65F70013AAF4 /* sphere.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 48D33F70177F65F70013AAF4 /* sphere.mdl */; };
+		48D33F72177F65F70013AAF4 /* sphere.mdl in Resources */ = {isa = PBXBuildFile; fileRef = 48D33F70177F65F70013AAF4 /* sphere.mdl */; };
 		48F55A9B176410A900184298 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9A176410A900184298 /* UIKit.framework */; };
 		48F55A9D176410A900184298 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9C176410A900184298 /* Foundation.framework */; };
 		48F55A9F176410A900184298 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F55A9E176410A900184298 /* CoreGraphics.framework */; };
@@ -84,6 +89,7 @@
 		48254E9E176CFFEC0021F0EF /* BWAnimationTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWAnimationTrack.m; sourceTree = "<group>"; };
 		48254EAC176D17FA0021F0EF /* BWWorldTimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWWorldTimeManager.h; sourceTree = "<group>"; };
 		48254EAD176D17FA0021F0EF /* BWWorldTimeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWWorldTimeManager.m; sourceTree = "<group>"; };
+		4837967517793C8200F77AF0 /* thruster.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = thruster.mdl; sourceTree = "<group>"; };
 		486DD3BD177277C100526BC4 /* BWLookAtCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWLookAtCamera.h; sourceTree = "<group>"; };
 		486DD3BE177277C100526BC4 /* BWLookAtCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWLookAtCamera.m; sourceTree = "<group>"; };
 		486DD3C01772800800526BC4 /* newHornet.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = newHornet.mdl; sourceTree = "<group>"; };
@@ -110,6 +116,9 @@
 		48B569B41764E3C80015B527 /* photo_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photo_selected.png; sourceTree = "<group>"; };
 		48D2882E1772028E00B84A29 /* LineShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = LineShader.fsh; sourceTree = "<group>"; };
 		48D288301772029D00B84A29 /* LineShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = LineShader.vsh; sourceTree = "<group>"; };
+		48D33F64177DE5810013AAF4 /* BWSpotLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWSpotLight.h; sourceTree = "<group>"; };
+		48D33F65177DE5810013AAF4 /* BWSpotLight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWSpotLight.m; sourceTree = "<group>"; };
+		48D33F70177F65F70013AAF4 /* sphere.mdl */ = {isa = PBXFileReference; lastKnownFileType = file; path = sphere.mdl; sourceTree = "<group>"; };
 		48F55A97176410A900184298 /* TestGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48F55A9A176410A900184298 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		48F55A9C176410A900184298 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -181,6 +190,7 @@
 		4877A7AC176FF66A00EB6259 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				48D33F70177F65F70013AAF4 /* sphere.mdl */,
 				48FE42D31772820C000449F7 /* fixedHornet.mdl */,
 				486DD3C01772800800526BC4 /* newHornet.mdl */,
 				488301D3176F526A0018F184 /* testExport2.mdl */,
@@ -192,6 +202,7 @@
 				488301E5176F5CB90018F184 /* leftJet.mdl */,
 				488301E6176F5CB90018F184 /* rightJet.mdl */,
 				488301EB176F5EB40018F184 /* rightJet2.mdl */,
+				4837967517793C8200F77AF0 /* thruster.mdl */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -226,6 +237,8 @@
 				48B029B917696A7D00396E28 /* BWCameraObject.m */,
 				486DD3BD177277C100526BC4 /* BWLookAtCamera.h */,
 				486DD3BE177277C100526BC4 /* BWLookAtCamera.m */,
+				48D33F64177DE5810013AAF4 /* BWSpotLight.h */,
+				48D33F65177DE5810013AAF4 /* BWSpotLight.m */,
 			);
 			name = SceneGraph;
 			sourceTree = "<group>";
@@ -434,6 +447,8 @@
 				4877A7B21770017200EB6259 /* hornet.mdl in Resources */,
 				4877A7B51770AB6F00EB6259 /* hornet2.mdl in Resources */,
 				486DD3C11772800800526BC4 /* newHornet.mdl in Resources */,
+				4837967617793C8200F77AF0 /* thruster.mdl in Resources */,
+				48D33F71177F65F70013AAF4 /* sphere.mdl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,6 +469,8 @@
 				4877A7B61770AB6F00EB6259 /* hornet2.mdl in Resources */,
 				486DD3C21772800800526BC4 /* newHornet.mdl in Resources */,
 				48FE42D41772820C000449F7 /* fixedHornet.mdl in Resources */,
+				4837967717793C8200F77AF0 /* thruster.mdl in Resources */,
+				48D33F72177F65F70013AAF4 /* sphere.mdl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,6 +510,7 @@
 				488301C1176E53790018F184 /* BWMesh.m in Sources */,
 				486DD3BF177277C100526BC4 /* BWLookAtCamera.m in Sources */,
 				48FE42DC17728FDC000449F7 /* BWForce.m in Sources */,
+				48D33F66177DE5810013AAF4 /* BWSpotLight.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,8 +596,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "2327CF70-3D95-4FA3-A3FB-6421D6178597";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2327CF70-3D95-4FA3-A3FB-6421D6178597";
+				PROVISIONING_PROFILE = "8203DCA6-9C74-47A5-AED7-79BCE3D26B7E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8203DCA6-9C74-47A5-AED7-79BCE3D26B7E";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -620,6 +638,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "TestGame/TestGame-Prefix.pch";
 				INFOPLIST_FILE = "TestGame/TestGame-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -631,6 +650,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "TestGame/TestGame-Prefix.pch";
 				INFOPLIST_FILE = "TestGame/TestGame-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

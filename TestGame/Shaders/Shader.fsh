@@ -12,16 +12,7 @@ uniform sampler2D texture;
 uniform vec2 textureOffset;
 
 void main()
-{
-  vec2 mix = textureVarying.xy;
-    mix.x += textureOffset.x;
-    mix.y += textureOffset.y;
-    if (mix.x > 1.0)
-    mix.x = mix.x - floor(mix.x);
-    if (mix.y > 1.0)
-    mix.y = mix.y - floor(mix.y);
-  vec4 textureCol = texture2D(texture, mix);
-  
-  vec4 mixed = colorVarying + textureCol;
+{  
+  vec4 mixed = colorVarying + texture2D(texture, textureVarying.xy);
     gl_FragColor = mixed;
 }
