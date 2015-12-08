@@ -25,4 +25,5 @@
 @property (nonatomic, assign) GLint uniformLight2On;
 @property (nonatomic, assign) GLint uniformLight3On;
 @property (nonatomic, assign) GLint uniformLight4On;
+@property (nonatomic, assign) GLint uniformHasTexture;
 @end

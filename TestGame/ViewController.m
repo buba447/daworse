@@ -16,6 +16,8 @@
 #import "BWLookAtCamera.h"
 #import "BWForce.h"
 #import "BWSpotLight.h"
+#import "BWCollisionWorld.h"
+#import "BWDynamicWorld.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 #define ARC4RANDOM_MAX      0x100000000
@@ -94,6 +96,8 @@ GLfloat gridLine [264] = {
   float shipVelocity_;
   BWSpotLight *spotLight_;
   BWSpotLight *worldLight_;
+  BWCollisionWorld *collisionWorld_;
+  BWDynamicWorld *dynamicWorld_;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -112,7 +116,7 @@ GLfloat gridLine [264] = {
     [EAGLContext setCurrentContext:nil];
   }
   [worldLight_ release];
-
+  [collisionWorld_ release];
   [spotLight_ release];
   [heroParent_ release];
   [debugGeometry_ release];
@@ -140,9 +144,11 @@ GLfloat gridLine [264] = {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  collisionWorld_ = [[BWCollisionWorld alloc] init];
+  dynamicWorld_ = [[BWDynamicWorld alloc] init];
   cameraStartTimes_ = [[NSMutableArray alloc] init];
   cameraSteps_ = [[NSMutableArray alloc] init];
-  debugMode_ = YES;
+  debugMode_ = NO;
   BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
   time.currentTime = 0;
   shaders_ = [[NSMutableDictionary alloc] init];
@@ -205,6 +211,11 @@ GLfloat gridLine [264] = {
   float angle = GLKVector2DotProduct(normal, origin);
 //  NSLog(@"Length %f Angle %f", shipVelocity_, angle);
   shipRotation_ = angle * 2;
+  
+  if (loc.y < self.view.bounds.size.height * 0.65) {
+    shipRotation_ = shipRotation_ * -1;
+    shipVelocity_ = shipVelocity_ * -1;
+  }
   if (press.state == UIGestureRecognizerStateEnded) {
     shipVelocity_ = 0;
     shipRotation_ = 0;
@@ -234,6 +245,7 @@ GLfloat gridLine [264] = {
 //  heroModel_.texture = [[textures_ valueForKey:@"test.png"] intValue];
   heroModel_.diffuseColor = GLKVector4Make(0.7, 0.85, 1, 1);
   heroModel_.uvOffset = CGPointZero;
+  
   
   [heroModel_ addChild:spotLight_];
   spotLight_.coneAngle = 0.8;
@@ -288,12 +300,12 @@ GLfloat gridLine [264] = {
   
   BWGraphObject *cameraParent = [[BWGraphObject alloc] init];
   [cameraParent addChild:mainCamera_];
-  heroParent_.translation = GLKVector3Make(20, 0, 20);
+//  heroParent_.translation = GLKVector3Make(20, 0, 20);
   
   
   [graphTree_ addChild:cameraParent];
   mainCamera_.rotation = GLKVector3Make(-25, 180, 0);
-  mainCamera_.translation = GLKVector3Make(0, 8, -11);
+  mainCamera_.translation = GLKVector3Make(0, 4, -5);
   float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
   mainCamera_.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0f), aspect, 0.1f, 100.0f);
   [models_ addObject:heroModel_];
@@ -302,16 +314,19 @@ GLfloat gridLine [264] = {
   sphere.mesh = [meshes_ objectForKey:@"sphere"];
   sphere.shader = [shaders_ objectForKey:@"Shader"];
   sphere.diffuseColor = GLKVector4Make(0.5, 0.5, 0.5, 1);
-  sphere.scale = GLKVector3Make(2, 2, 2);
+//  sphere.scale = GLKVector3Make(2, 2, 2);
   sphere.translation = GLKVector3Make(5, 0, 5);
   [models_ addObject:sphere];
-  [graphTree_ addChild:sphere];
-  [sphere release];
   
+  [graphTree_ addChild:sphere];
+  
+  
+  NSMutableArray *sphereArray = [NSMutableArray array];
   for (int i = 0; i < 200; i ++) {
     BWModelObject *newModel = [[BWModelObject alloc] init];
     newModel.mesh = [meshes_ objectForKey:@"sphere"];
     newModel.shader = [shaders_ objectForKey:@"Shader"];
+    newModel.texture = [self loadTextureNamed:@"photo_selected.png"];
     newModel.diffuseColor = GLKVector4Make(0.5, 0.5, 0.5, 1);
     newModel.uvOffset = CGPointZero;
     newModel.translation = GLKVector3Make(floorf(((double)arc4random() / ARC4RANDOM_MAX) * 80.0f) - 40,
@@ -320,29 +335,58 @@ GLfloat gridLine [264] = {
     newModel.rotation = GLKVector3Make(floorf(((double)arc4random() / ARC4RANDOM_MAX) * 360.0f) - 180,
                                           0,
                                           floorf(((double)arc4random() / ARC4RANDOM_MAX) * 360.0f) - 180);
+//    newModel.angularVelocity = GLKVector3Make(0, 0.5, 0);
+//    newModel.linearVelocity = GLKVector3Make(1, 0, 0);
     [models_ addObject:newModel];
+    
+    
+    
     [graphTree_ addChild:newModel];
+    [graphTree_ commitTransforms];
+    [collisionWorld_ addCollisionObject:newModel];
+    [sphereArray addObject:newModel];
   }
+  
+  NSArray *removeArray = [collisionWorld_ stepCollisionWorld];
+  for (BWModelObject *obj in removeArray) {
+    [collisionWorld_ removeCollisionObject:obj];
+    [graphTree_ removeChild:obj];
+  }
+  [sphereArray removeObjectsInArray:removeArray];
+  [models_ removeObjectsInArray:removeArray];
+  
+  for (BWModelObject *newModel in sphereArray) {
+    [collisionWorld_ removeCollisionObject:newModel];
+    [dynamicWorld_ addPhysicsObject:newModel];
+  }
+  
+  
   [graphTree_ commitTransforms];
+
+  [dynamicWorld_ addKineticPhysicsObject:heroModel_];
+//  [collisionWorld_ addCollisionObject:sphere];
+//  [collisionWorld_ addCollisionObject:heroModel_];
+  [sphere release];
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
 
 - (void)update {
+  
   BWWorldTimeManager *time = [BWWorldTimeManager sharedManager];
   time.currentTime += self.timeSinceLastUpdate;
   
 
-  for (BWModelObject *mocel in models_) {
-    if (mocel != heroModel_ && ![heroModel_.children containsObject:mocel]) {
-      [mocel moveAlongLocalNormal:GLKVector3Make((-cos(time.currentTime) * 0.01), (cos(time.currentTime + [models_ indexOfObject:mocel]) * 0.01), 0)];
-      mocel.rotation = GLKVector3Add(mocel.rotation, GLKVector3Make(1, 1, 2));
-    }
-  }
+//  for (BWModelObject *mocel in models_) {
+//    if (mocel != heroModel_ && ![heroModel_.children containsObject:mocel]) {
+//      [mocel moveAlongLocalNormal:GLKVector3Make((-cos(time.currentTime) * 0.01), (cos(time.currentTime + [models_ indexOfObject:mocel]) * 0.01), 0)];
+//      mocel.rotation = GLKVector3Add(mocel.rotation, GLKVector3Make(1, 1, 2));
+//    }
+//  }
   heroParent_.rotation =  GLKVector3Add(heroParent_.rotation, GLKVector3Make(0, shipRotation_, 0));
-  [heroParent_ moveAlongLocalNormal:GLKVector3Make(0, 0, shipVelocity_)];
+  [heroParent_ moveAlongLocalNormal:GLKVector3Make(0, 0, shipVelocity_ * 2)];
   GLKVector3 rotation = heroModel_.rotation;
-  rotation.z = shipRotation_ * -5;
+  rotation.z = shipRotation_ * -10;
   heroModel_.rotation = GLKVector3Add(rotation, GLKVector3Make(-(cos(time.currentTime * 2 ) * 0.3), 0, -(cos(time.currentTime * 2) * 0.1)));
   
   [heroModel_ moveAlongLocalNormal:GLKVector3Make(0, (cos(time.currentTime * 2) * 0.01), 0)];
@@ -380,7 +424,10 @@ GLfloat gridLine [264] = {
   [(BWModelObject *)[heroModel_.children objectAtIndex:2] setRotation:backJetsL];
   [(BWModelObject *)[heroModel_.children objectAtIndex:3] setRotation:leftJetsRotation];
   [graphTree_ commitTransforms];
-  
+  [dynamicWorld_ physicsUpdateWithElapsedTime:self.timeSinceLastDraw];
+//  [graphTree_ commitTransforms];
+//  NSArray *collisions = [collisionWorld_ stepCollisionWorld];
+
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect {
@@ -416,11 +463,13 @@ GLfloat gridLine [264] = {
     glUniform4f(model.shader.uniformDiffuse, model.diffuseColor.x, model.diffuseColor.y, model.diffuseColor.z, model.diffuseColor.w);
     glUniformMatrix4fv(model.shader.uniformLight1, 1, 0, spotLight_.lightInfo.m);
     glUniform1i(model.shader.uniformLight1On, 1);
+    glUniform1i(model.shader.uniformHasTexture, MIN(1, model.texture));
     glUniformMatrix4fv(model.shader.uniformLight2, 1, 0, worldLight_.lightInfo.m);
     glUniform1i(model.shader.uniformLight2On, 1);
     glDrawArrays(GL_TRIANGLES, 0, model.mesh.vertexCount);
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArrayOES(0);
+
   }
 //  NSLog(@"Draw Calls %f", drawCalls);
   if (debugMode_) {
@@ -544,7 +593,8 @@ GLfloat gridLine [264] = {
                              @"light1" : @"uniformLight1",
                              @"light1On" : @"uniformLight1On",
                              @"light2" : @"uniformLight2",
-                             @"light2On" : @"uniformLight2On"};
+                             @"light2On" : @"uniformLight2On",
+                             @"hasTexture" : @"uniformHasTexture"};
   
   NSDictionary *attributes = @{@"position": @(GLKVertexAttribPosition),
                                @"normal" : @(GLKVertexAttribNormal),
@@ -557,6 +607,7 @@ GLfloat gridLine [264] = {
   
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_TEXTURE_2D);
+  
   [self loadDebugMesh:normalVertices withSize:sizeof(normalVertices)];
   [self loadDebugMesh:gridLine withSize:sizeof(gridLine)];
   
@@ -564,7 +615,7 @@ GLfloat gridLine [264] = {
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glShadeModel (GL_SMOOTH);
-  [self loadTextureNamed:@"test.png"];
+  [self loadTextureNamed:@"photo_selected.png"];
   
 }
 

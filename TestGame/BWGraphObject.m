@@ -8,6 +8,8 @@
 
 #import "BWGraphObject.h"
 #import "BWAnimationTrack.h"
+#import "BWCollisionWorld.h"
+#import "BWDynamicWorld.h"
 
 @implementation BWGraphObject {
   NSMutableDictionary *keyframeTracks_;
@@ -20,6 +22,8 @@
 }
 
 - (void)dealloc {
+  [_dynamicWorld release];
+  [_collisionWorld release];
   [self removeAllAnimationKeys];
   [keyframeTracks_ release];
   [_children release];
@@ -29,7 +33,10 @@
 - (id)init {
   self = [super init];
   if (self) {
+    _collisionType = BWGraphObjectCollisionTypeNone;
     keyframeTracks_ = [[NSMutableDictionary alloc] init];
+    _angularVelocity = GLKVector3Make(0, 0, 0);
+    _linearVelocity = GLKVector3Make(0, 0, 0);
     _translation = GLKVector3Make(0, 0, 0);
     _rotation = GLKVector3Make(0, 0, 0);
     _scale = GLKVector3Make(1, 1, 1);
@@ -68,6 +75,9 @@
 }
 
 - (void)commitTransforms {
+  if (self.collisionType == BWGraphObjectCollisionTypeRigid) {
+    return;
+  }
   previousWorldMatrix_ = _worldTransform;
   previousLocalMatrix_ = _localTransform;
   
@@ -93,7 +103,12 @@
   GLKVector4 previousLocation = GLKMatrix4GetRow(previousWorldMatrix_, 3);
   GLKVector4 movementVector = GLKVector4Subtract(currentLocation, previousLocation);
   _movementVector = GLKVector3Make(movementVector.x, movementVector.y, movementVector.z);
-  
+  if (self.collisionWorld) {
+    [self.collisionWorld updateGraphObject:self];
+  }
+  if (self.dynamicWorld && self.collisionType == BWGraphObjectCollisionTypeKinetic) {
+    [self.dynamicWorld updateKineticObject:self];
+  }
   [self.children makeObjectsPerformSelector:@selector(commitTransforms)];
 }
 
@@ -103,7 +118,9 @@
   child.parentObject = nil;
   NSMutableArray *newChildren = [NSMutableArray arrayWithArray:_children];
   [newChildren removeObject:child];
-  _children = newChildren;
+  [_children release];
+  _children = [newChildren retain];
+  
 }
 
 - (void)addChild:(BWGraphObject *)child {

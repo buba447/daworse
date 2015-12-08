@@ -9,8 +9,23 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+typedef enum {
+  BWGraphObjectCollisionTypeRigid,
+  BWGraphObjectCollisionTypeKinetic,
+  BWGraphObjectCollisionTypePassive,
+  BWGraphObjectCollisionTypeNone
+}BWGraphObjectCollisionType;
+@class BWCollisionWorld;
+@class BWDynamicWorld;
 
 @interface BWGraphObject : NSObject
+
+@property (nonatomic, assign) BWGraphObjectCollisionType collisionType;
+@property (nonatomic, retain) BWDynamicWorld *dynamicWorld;
+@property (nonatomic, retain) BWCollisionWorld *collisionWorld;
+
+@property (nonatomic, assign) GLKVector3 angularVelocity;
+@property (nonatomic, assign) GLKVector3 linearVelocity;
 
 @property (nonatomic, readonly) GLKVector3 movementVector;
 

@@ -10,20 +10,21 @@ attribute vec4 position;
 attribute vec3 normal;
 attribute vec4 texture;
 
-
-
 uniform mat4 modelViewMatrix;
 uniform mat4 cameraLocationMatrix;
 uniform mat4 cameraProjectionMatrix;
 uniform mat3 normalMatrix;
 
-precision mediump float;
+
 varying lowp vec4 colorVarying;
+varying lowp vec4 lightVarying;
 varying lowp vec4 textureVarying;
+precision mediump float;
 uniform int light1On;
 uniform int light2On;
 uniform int light3On;
 uniform int light4On;
+uniform int hasTexture;
 uniform mat4 light1;
 uniform mat4 light2;
 uniform mat4 light3;
@@ -58,10 +59,11 @@ void main() {
                   anglePercent2 * inCone2 * float(light2On));
   vec4 light2Color = (nDotL2 * light2[2]);
   
-  
-  colorVarying = diffuseColor * (light1Color + light2Color);
+  lightVarying = (light1Color + light2Color);
+  lightVarying[3] = 1.0;
+  colorVarying = diffuseColor;
   colorVarying[3] = 1.0;
-
-  textureVarying = texture ;
+  
+  textureVarying = texture;
   gl_Position = cameraProjectionMatrix * cameraLocationMatrix * modelViewMatrix * position;
 }
